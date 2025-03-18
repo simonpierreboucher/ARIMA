@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modèles de Séries Temporelles - Analyse Interactive</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        :root {
+            --ar1-color: #3498db;
+            --ar2-color: #27ae60;
+            --ma1-color: #e67e22;
+            --ma2-color: #d35400;
+            --arma-color: #9b59b6;
+            --bg-color: #f5f7fa;
+            --card-bg: white;
+            --text-color: #2c3e50;
+            --light-color: #ecf0f1;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: linear-gradient(135deg, var(--bg-color) 0%, #c3cfe2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 30px;
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--ar1-color), var(--ar2-color), var(--ma1-color), var(--ma2-color), var(--arma-color));
+        }
+        
+        h1 {
+            color: var(--text-color);
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            color: #7f8c8d;
+            margin-bottom: 25px;
+        }
+        
+        .description {
+            max-width: 800px;
+            margin: 0 auto 25px;
+            font-size: 1.1rem;
+        }
+        
+        .models-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            justify-content: center;
+        }
+        
+        .model-card {
+            flex: 0 1 calc(50% - 25px);
+            min-width: 300px;
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px var(--shadow-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+        
+        @media (min-width: 992px) {
+            .model-card {
+                flex: 0 1 calc(33.333% - 25px);
+            }
+        }
+        
+        .model-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px var(--shadow-color);
+        }
+        
+        .model-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+        }
+        
+        .model-card.ar1::before {
+            background-color: var(--ar1-color);
+        }
+        
+        .model-card.ar2::before {
+            background-color: var(--ar2-color);
+        }
+        
+        .model-card.ma1::before {
+            background-color: var(--ma1-color);
+        }
+        
+        .model-card.ma2::before {
+            background-color: var(--ma2-color);
+        }
+        
+        .model-card.arma::before {
+            background-color: var(--arma-color);
+        }
+        
+        .card-header {
+            padding: 25px 25px 15px;
+            text-align: center;
+        }
+        
+        .model-title {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .ar1 .model-title {
+            color: var(--ar1-color);
+        }
+        
+        .ar2 .model-title {
+            color: var(--ar2-color);
+        }
+        
+        .ma1 .model-title {
+            color: var(--ma1-color);
+        }
+        
+        .ma2 .model-title {
+            color: var(--ma2-color);
+        }
+        
+        .arma .model-title {
+            color: var(--arma-color);
+        }
+        
+        .model-equation {
+            font-family: 'Cambria Math', 'Times New Roman', serif;
+            font-size: 1.3rem;
+            margin: 15px 0;
+            font-style: italic;
+        }
+        
+        .card-body {
+            padding: 0 25px 25px;
+        }
+        
+        .model-description {
+            margin-bottom: 25px;
+        }
+        
+        .properties {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        
+        .property {
+            background-color: var(--light-color);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .card-footer {
+            padding: 15px 25px;
+            text-align: center;
+            background-color: var(--light-color);
+        }
+        
+        .explore-button {
+            display: inline-block;
+            padding: 12px 30px;
+            border-radius: 25px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        
+        .explore-button:hover {
+            transform: scale(1.05);
+        }
+        
+        .ar1 .explore-button {
+            background-color: var(--ar1-color);
+        }
+        
+        .ar1 .explore-button:hover {
+            background-color: #2980b9;
+        }
+        
+        .ar2 .explore-button {
+            background-color: var(--ar2-color);
+        }
+        
+        .ar2 .explore-button:hover {
+            background-color: #16a085;
+        }
+        
+        .ma1 .explore-button {
+            background-color: var(--ma1-color);
+        }
+        
+        .ma1 .explore-button:hover {
+            background-color: #d35400;
+        }
+        
+        .ma2 .explore-button {
+            background-color: var(--ma2-color);
+        }
+        
+        .ma2 .explore-button:hover {
+            background-color: #c0392b;
+        }
+        
+        .arma .explore-button {
+            background-color: var(--arma-color);
+        }
+        
+        .arma .explore-button:hover {
+            background-color: #8e44ad;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+        
+        .comparison-section {
+            margin: 50px auto;
+            padding: 30px;
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px var(--shadow-color);
+        }
+        
+        .comparison-section h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: var(--text-color);
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        .comparison-table th, 
+        .comparison-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--light-color);
+        }
+        
+        .comparison-table th {
+            background-color: var(--light-color);
+            font-weight: bold;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .comparison-table tr:hover {
+            background-color: #f1f1f1;
+        }
+        
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .description {
+                font-size: 1rem;
+            }
+            
+            .model-card {
+                flex: 0 1 100%;
+            }
+            
+            .comparison-table {
+                font-size: 0.9rem;
+            }
+            
+            .comparison-table th, 
+            .comparison-table td {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="animate__animated animate__fadeIn">
+            <h1>Modèles de Séries Temporelles</h1>
+            <p class="subtitle">Analyse interactive des propriétés statistiques</p>
+            <p class="description">
+                Découvrez les caractéristiques des principaux modèles utilisés en analyse des séries temporelles : 
+                AR(1), AR(2), MA(1), MA(2) et ARMA(1,1). Explorez leurs propriétés statistiques, 
+                visualisez leur comportement et simulez des réalisations de ces processus.
+            </p>
+        </header>
+        
+        <div class="models-grid">
+            <div class="model-card ar1 fade-in">
+                <div class="card-header">
+                    <h2 class="model-title">Processus AR(1)</h2>
+                    <p class="model-equation">X<sub>t</sub> = φX<sub>t-1</sub> + ε<sub>t</sub></p>
+                </div>
+                <div class="card-body">
+                    <p class="model-description">
+                        Le processus autorégressif d'ordre 1 est le modèle stationnaire le plus simple, 
+                        où chaque observation dépend linéairement de la valeur précédente plus un terme d'erreur.
+                    </p>
+                    <div class="properties">
+                        <span class="property">Stationnarité: |φ| < 1</span>
+                        <span class="property">Variance: σ²/(1-φ²)</span>
+                        <span class="property">ACF: décroissance exponentielle</span>
+                        <span class="property">PACF: coupure après lag 1</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="ar1.html" class="explore-button">Explorer AR(1)</a>
+                </div>
+            </div>
+            
+            <div class="model-card ar2 fade-in">
+                <div class="card-header">
+                    <h2 class="model-title">Processus AR(2)</h2>
+                    <p class="model-equation">X<sub>t</sub> = φ<sub>1</sub>X<sub>t-1</sub> + φ<sub>2</sub>X<sub>t-2</sub> + ε<sub>t</sub></p>
+                </div>
+                <div class="card-body">
+                    <p class="model-description">
+                        L'AR(2) étend l'AR(1) en incluant deux valeurs passées, ce qui permet 
+                        de modéliser des comportements plus complexes comme les oscillations cycliques.
+                    </p>
+                    <div class="properties">
+                        <span class="property">Région de stationnarité triangulaire</span>
+                        <span class="property">ACF: peut osciller</span>
+                        <span class="property">PACF: coupure après lag 2</span>
+                        <span class="property">Peut montrer des cycles</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="ar2.html" class="explore-button">Explorer AR(2)</a>
+                </div>
+            </div>
+            
+            <div class="model-card ma1 fade-in">
+                <div class="card-header">
+                    <h2 class="model-title">Processus MA(1)</h2>
+                    <p class="model-equation">X<sub>t</sub> = ε<sub>t</sub> + θε<sub>t-1</sub></p>
+                </div>
+                <div class="card-body">
+                    <p class="model-description">
+                        Le processus à moyenne mobile d'ordre 1 dépend du terme d'erreur actuel et du 
+                        terme d'erreur précédent, créant une mémoire à court terme.
+                    </p>
+                    <div class="properties">
+                        <span class="property">Toujours stationnaire</span>
+                        <span class="property">Inversibilité: |θ| < 1</span>
+                        <span class="property">ACF: coupure après lag 1</span>
+                        <span class="property">PACF: décroissance exponentielle</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="ma1.html" class="explore-button">Explorer MA(1)</a>
+                </div>
+            </div>
+            
+            <div class="model-card ma2 fade-in">
+                <div class="card-header">
+                    <h2 class="model-title">Processus MA(2)</h2>
+                    <p class="model-equation">X<sub>t</sub> = ε<sub>t</sub> + θ<sub>1</sub>ε<sub>t-1</sub> + θ<sub>2</sub>ε<sub>t-2</sub></p>
+                </div>
+                <div class="card-body">
+                    <p class="model-description">
+                        Le MA(2) étend la mémoire à court terme du MA(1) en incluant les deux 
+                        termes d'erreur précédents, offrant plus de flexibilité.
+                    </p>
+                    <div class="properties">
+                        <span class="property">Toujours stationnaire</span>
+                        <span class="property">Région d'inversibilité triangulaire</span>
+                        <span class="property">ACF: coupure après lag 2</span>
+                        <span class="property">PACF: décroissance graduelle</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="ma2.html" class="explore-button">Explorer MA(2)</a>
+                </div>
+            </div>
+            
+            <div class="model-card arma fade-in">
+                <div class="card-header">
+                    <h2 class="model-title">Processus ARMA(1,1)</h2>
+                    <p class="model-equation">X<sub>t</sub> = φX<sub>t-1</sub> + ε<sub>t</sub> + θε<sub>t-1</sub></p>
+                </div>
+                <div class="card-body">
+                    <p class="model-description">
+                        L'ARMA(1,1) combine les caractéristiques des processus AR et MA, 
+                        offrant à la fois mémoire à long terme et effets immédiats.
+                    </p>
+                    <div class="properties">
+                        <span class="property">Stationnarité: |φ| < 1</span>
+                        <span class="property">Inversibilité: |θ| < 1</span>
+                        <span class="property">ACF: décroissance après lag 1</span>
+                        <span class="property">Plus parcimonieux</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="arma11.html" class="explore-button">Explorer ARMA(1,1)</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="comparison-section fade-in">
+            <h2>Comparaison des modèles</h2>
+            <div style="overflow-x: auto;">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Modèle</th>
+                            <th>Stationnarité</th>
+                            <th>Inversibilité</th>
+                            <th>ACF</th>
+                            <th>PACF</th>
+                            <th>Cas d'utilisation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>AR(1)</strong></td>
+                            <td>|φ| < 1</td>
+                            <td>Toujours</td>
+                            <td>Décroissance exponentielle</td>
+                            <td>Coupure après lag 1</td>
+                            <td>Tendances persistantes, retour à la moyenne</td>
+                        </tr>
+                        <tr>
+                            <td><strong>AR(2)</strong></td>
+                            <td>Région triangulaire</td>
+                            <td>Toujours</td>
+                            <td>Exponentielle ou oscillante</td>
+                            <td>Coupure après lag 2</td>
+                            <td>Comportement cyclique, oscillations</td>
+                        </tr>
+                        <tr>
+                            <td><strong>MA(1)</strong></td>
+                            <td>Toujours</td>
+                            <td>|θ| < 1</td>
+                            <td>Coupure après lag 1</td>
+                            <td>Décroissance exponentielle</td>
+                            <td>Effets à court terme, lissage</td>
+                        </tr>
+                        <tr>
+                            <td><strong>MA(2)</strong></td>
+                            <td>Toujours</td>
+                            <td>Région triangulaire</td>
+                            <td>Coupure après lag 2</td>
+                            <td>Décroissance graduelle</td>
+                            <td>Effets à court terme plus complexes</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ARMA(1,1)</strong></td>
+                            <td>|φ| < 1</td>
+                            <td>|θ| < 1</td>
+                            <td>Complexe, décroissance après lag 1</td>
+                            <td>Décroissance graduelle</td>
+                            <td>Combinaison d'effets à court et long terme</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>© 2023 Analyse des Séries Temporelles | Simulateurs Interactifs</p>
+        <p>Conçu pour l'apprentissage et la visualisation des processus stochastiques</p>
+    </footer>
+    
+    <script>
+        // Animation de fade-in au scroll
+        document.addEventListener('DOMContentLoaded', function() {
+            const fadeElements = document.querySelectorAll('.fade-in');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            fadeElements.forEach(element => {
+                observer.observe(element);
+            });
+        });
+    </script>
+</body>
+</html>

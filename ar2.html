@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Propriétés statistiques d'un processus AR(2)</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        :root {
+            --primary-color: #27ae60;
+            --secondary-color: #16a085;
+            --accent-color: #8e44ad;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-color);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            overflow: hidden;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--light-color);
+            padding-bottom: 20px;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        h2 {
+            color: var(--secondary-color);
+            font-size: 1.8rem;
+            margin: 30px 0 15px;
+            padding-left: 10px;
+            border-left: 5px solid var(--secondary-color);
+        }
+        
+        .equation-container {
+            background-color: var(--light-color);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            transition: transform 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .step-explanation {
+            margin: 15px 0;
+        }
+        
+        .definition {
+            background-color: rgba(23, 160, 133, 0.1);
+            padding: 15px;
+            border-left: 4px solid var(--secondary-color);
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .final-result {
+            background-color: rgba(142, 68, 173, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid var(--accent-color);
+            font-weight: bold;
+        }
+        
+        .interactive-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input[type="range"], input[type="number"] {
+            width: 100%;
+        }
+        
+        button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: var(--primary-color);
+        }
+        
+        .property-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .property-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-title {
+            font-size: 1.3rem;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        
+        canvas {
+            width: 100%;
+            height: 300px;
+            margin: 20px 0;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            color: var(--dark-color);
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #f1f1f1;
+            border: none;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            border-radius: 5px 5px 0 0;
+        }
+        
+        .tab.active {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .two-cols {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .col {
+            flex: 1 1 45%;
+            min-width: 300px;
+        }
+        
+        .stationarity-region {
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        #stationarity-plot {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                margin-right: 0;
+                border-radius: 5px;
+            }
+            
+            .two-cols {
+                flex-direction: column;
+            }
+            
+            .col {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="animate__animated animate__fadeInDown">
+            <h1>Processus Autorégressif d'Ordre 2</h1>
+            <p>Analyse détaillée des propriétés statistiques d'un AR(2)</p>
+        </header>
+        
+        <div class="definition animate__animated animate__fadeIn">
+            <p>Un processus AR(2) est défini par l'équation :
+            \[X_t = \phi_1 X_{t-1} + \phi_2 X_{t-2} + \varepsilon_t\]
+            où \(\varepsilon_t \sim \text{WN}(0, \sigma^2_{\varepsilon})\) est un bruit blanc de moyenne nulle et de variance \(\sigma^2_{\varepsilon}\).</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="openTab(event, 'stationarity')">Stationnarité</button>
+            <button class="tab" onclick="openTab(event, 'mean')">Moyenne</button>
+            <button class="tab" onclick="openTab(event, 'variance')">Variance</button>
+            <button class="tab" onclick="openTab(event, 'autocovariance')">Autocovariance</button>
+            <button class="tab" onclick="openTab(event, 'autocorrelation')">Autocorrélation</button>
+            <button class="tab" onclick="openTab(event, 'pacf')">PACF</button>
+            <button class="tab" onclick="openTab(event, 'simulator')">Simulateur</button>
+        </div>
+        
+        <div id="stationarity" class="tab-content active">
+            <h2>Conditions de Stationnarité</h2>
+            
+            <div class="equation-container">
+                <p>Un processus AR(2) peut être exprimé sous forme polynomiale avec l'opérateur de retard \(L\) :</p>
+                \[X_t - \phi_1 X_{t-1} - \phi_2 X_{t-2} = \varepsilon_t\]
+                \[(1 - \phi_1 L - \phi_2 L^2) X_t = \varepsilon_t\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Pour que le processus soit stationnaire, toutes les racines du polynôme caractéristique \(P(z) = 1 - \phi_1 z - \phi_2 z^2\) doivent être de module strictement supérieur à 1 (ou de manière équivalente, toutes les racines de \(\phi(z) = z^2 - \phi_1 z - \phi_2\) doivent être de module strictement inférieur à 1).</p>
+            </div>
+            
+            <div class="equation-container">
+                <p>Cela conduit aux conditions suivantes sur les paramètres :</p>
+                \[\begin{align}
+                \phi_2 + \phi_1 &< 1 \\
+                \phi_2 - \phi_1 &< 1 \\
+                |\phi_2| &< 1
+                \end{align}\]
+            </div>
+            
+            <div class="final-result">
+                <p>Ces trois inéquations définissent la région de stationnarité d'un processus AR(2) dans le plan \((\phi_1, \phi_2)\).</p>
+            </div>
+            
+            <div class="stationarity-region">
+                <h3>Région de stationnarité pour un AR(2)</h3>
+                <canvas id="stationarity-plot" width="400" height="400"></canvas>
+            </div>
+            
+            <div class="step-explanation">
+                <p>La région de stationnarité est le triangle à l'intérieur des trois droites. En dehors de cette région, le processus n'est pas stationnaire.</p>
+                <p>Quand \(\phi_2\) est proche de -1, le processus a tendance à osciller avec une période de deux unités de temps. Quand \(\phi_1 + \phi_2\) est proche de 1, le processus a un comportement similaire à celui d'une marche aléatoire.</p>
+            </div>
+        </div>
+        
+        <div id="mean" class="tab-content">
+            <h2>Calcul de la Moyenne</h2>
+            
+            <div class="equation-container">
+                <p>Prenons l'espérance de \(X_t\) :</p>
+                \[E[X_t] = E[\phi_1 X_{t-1} + \phi_2 X_{t-2} + \varepsilon_t] = \phi_1 E[X_{t-1}] + \phi_2 E[X_{t-2}] + E[\varepsilon_t]\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Comme \(E[\varepsilon_t] = 0\) et en supposant que le processus est stationnaire (c'est-à-dire \(E[X_t] = E[X_{t-1}] = E[X_{t-2}] = \mu\)), nous obtenons :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\mu = \phi_1 \mu + \phi_2 \mu + 0\]
+                \[\mu(1 - \phi_1 - \phi_2) = 0\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Si \(\phi_1 + \phi_2 \neq 1\) (ce qui est assuré par les conditions de stationnarité), alors :</p>
+            </div>
+            
+            <div class="final-result">
+                \[\mu = E[X_t] = 0\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Si le processus inclut une constante \(c\) dans son équation (\(X_t = c + \phi_1 X_{t-1} + \phi_2 X_{t-2} + \varepsilon_t\)), alors la moyenne ne serait pas nulle et vaudrait :</p>
+                \[\mu = \frac{c}{1 - \phi_1 - \phi_2}\]
+            </div>
+        </div>
+        
+        <div id="variance" class="tab-content">
+            <h2>Calcul de la Variance</h2>
+            
+            <div class="equation-container">
+                <p>Pour un processus stationnaire, la variance est constante :</p>
+                \[\text{Var}(X_t) = \text{Var}(X_{t-1}) = \text{Var}(X_{t-2}) = \gamma(0)\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Calculons la variance de \(X_t\) :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\begin{align*}
+                \text{Var}(X_t) &= \text{Var}(\phi_1 X_{t-1} + \phi_2 X_{t-2} + \varepsilon_t) \\
+                &= \phi_1^2 \text{Var}(X_{t-1}) + \phi_2^2 \text{Var}(X_{t-2}) + \text{Var}(\varepsilon_t) + 2\phi_1\phi_2\text{Cov}(X_{t-1}, X_{t-2})
+                \end{align*}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Comme \(\text{Cov}(X_{t-1}, X_{t-2}) = \gamma(1)\) et \(\varepsilon_t\) est indépendant de \(X_{t-1}\) et \(X_{t-2}\), nous avons :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\gamma(0) = \phi_1^2 \gamma(0) + \phi_2^2 \gamma(0) + \sigma^2_{\varepsilon} + 2\phi_1\phi_2\gamma(1)\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Pour résoudre cette équation, nous avons besoin d'une expression pour \(\gamma(1)\). On peut l'obtenir par les équations de Yule-Walker (voir l'onglet Autocovariance). Le résultat final pour la variance est :</p>
+            </div>
+            
+            <div class="final-result">
+                \[\gamma(0) = \frac{(1-\phi_2)\sigma^2_{\varepsilon}}{(1+\phi_2)(1-\phi_2-\phi_1)(1-\phi_2+\phi_1)}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Cette variance existe seulement si les conditions de stationnarité sont remplies.</p>
+            </div>
+        </div>
+        
+        <div id="autocovariance" class="tab-content">
+            <h2>Calcul de l'Autocovariance</h2>
+            
+            <div class="equation-container">
+                <p>L'autocovariance à un décalage \(h\) est définie par :</p>
+                \[\gamma(h) = \text{Cov}(X_t, X_{t+h})\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Pour un AR(2), les autocovariances peuvent être obtenues à partir des équations de Yule-Walker :</p>
+            </div>
+            
+            <div class="equation-container">
+                <p>Pour \(h = 1\) :</p>
+                \[\gamma(1) = \phi_1 \gamma(0) + \phi_2 \gamma(-1) = \phi_1 \gamma(0) + \phi_2 \gamma(1)\]
+                
+                <p>En résolvant pour \(\gamma(1)\) :</p>
+                \[\gamma(1) = \frac{\phi_1 \gamma(0)}{1 - \phi_2}\]
+            </div>
+            
+            <div class="equation-container">
+                <p>Pour \(h = 2\) :</p>
+                \[\gamma(2) = \phi_1 \gamma(1) + \phi_2 \gamma(0)\]
+                
+                <p>En substituant \(\gamma(1)\) :</p>
+                \[\gamma(2) = \phi_1 \frac{\phi_1 \gamma(0)}{1 - \phi_2} + \phi_2 \gamma(0) = \gamma(0) \left(\frac{\phi_1^2}{1 - \phi_2} + \phi_2\right)\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Pour \(h \geq 3\), nous pouvons utiliser la récurrence suivante :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\gamma(h) = \phi_1 \gamma(h-1) + \phi_2 \gamma(h-2)\]
+            </div>
+            
+            <div class="final-result">
+                \[\gamma(h) = 
+                \begin{cases}
+                \frac{(1-\phi_2)\sigma^2_{\varepsilon}}{(1+\phi_2)(1-\phi_2-\phi_1)(1-\phi_2+\phi_1)} & \text{pour } h = 0 \\
+                \frac{\phi_1 \gamma(0)}{1 - \phi_2} & \text{pour } h = 1 \\
+                \phi_1 \gamma(h-1) + \phi_2 \gamma(h-2) & \text{pour } h \geq 2
+                \end{cases}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Cette formule de récurrence montre que les autocovariances d'un AR(2) suivent une structure plus complexe que celles d'un AR(1).</p>
+            </div>
+        </div>
+        
+        <div id="autocorrelation" class="tab-content">
+            <h2>Calcul de l'Autocorrélation (ACF)</h2>
+            
+            <div class="equation-container">
+                <p>L'autocorrélation à un décalage \(h\) est définie par :</p>
+                \[\rho(h) = \frac{\gamma(h)}{\gamma(0)}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>En utilisant les résultats précédents pour l'autocovariance :</p>
+            </div>
+            
+            <div class="equation-container">
+                <p>Pour \(h = 1\) :</p>
+                \[\rho(1) = \frac{\gamma(1)}{\gamma(0)} = \frac{\phi_1}{1 - \phi_2}\]
+            </div>
+            
+            <div class="equation-container">
+                <p>Pour \(h = 2\) :</p>
+                \[\rho(2) = \frac{\gamma(2)}{\gamma(0)} = \frac{\phi_1^2}{1 - \phi_2} + \phi_2\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Pour \(h \geq 3\), les autocorrélations suivent la même récurrence que les autocovariances :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\rho(h) = \phi_1 \rho(h-1) + \phi_2 \rho(h-2) \quad \text{pour } h \geq 3\]
+            </div>
+            
+            <div class="final-result">
+                \[\rho(h) = 
+                \begin{cases}
+                1 & \text{pour } h = 0 \\
+                \frac{\phi_1}{1 - \phi_2} & \text{pour } h = 1 \\
+                \frac{\phi_1^2}{1 - \phi_2} + \phi_2 & \text{pour } h = 2 \\
+                \phi_1 \rho(h-1) + \phi_2 \rho(h-2) & \text{pour } h \geq 3
+                \end{cases}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>L'ACF d'un processus AR(2) peut présenter plusieurs comportements intéressants :</p>
+                <ul>
+                    <li>Décroissance exponentielle monotone (lorsque les racines sont réelles)</li>
+                    <li>Décroissance sinusoïdale amortie (lorsque les racines sont complexes)</li>
+                </ul>
+            </div>
+            
+            <div class="interactive-section">
+                <h3>Visualisation de l'autocorrélation</h3>
+                <div class="two-cols">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="phi1-acf">Coefficient φ₁ : <span id="phi1-value-acf">0.5</span></label>
+                            <input type="range" id="phi1-acf" min="-1.8" max="1.8" step="0.1" value="0.5" oninput="updateACF()">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="phi2-acf">Coefficient φ₂ : <span id="phi2-value-acf">0.3</span></label>
+                            <input type="range" id="phi2-acf" min="-0.95" max="0.95" step="0.05" value="0.3" oninput="updateACF()">
+                        </div>
+                    </div>
+                </div>
+                <div id="stationarity-warning-acf" style="color: red; display: none;">
+                    Attention : Ces valeurs de paramètres sont en dehors de la région de stationnarité.
+                </div>
+                <canvas id="acf-chart"></canvas>
+            </div>
+        </div>
+        
+        <div id="pacf" class="tab-content">
+            <h2>Calcul de l'Autocorrélation Partielle (PACF)</h2>
+            
+            <div class="equation-container">
+                <p>Pour un processus AR(2), la fonction d'autocorrélation partielle (PACF) prend les valeurs suivantes :</p>
+            </div>
+            
+            <div class="step-explanation">
+                <p>\(\phi_{11} = \rho(1)\) (pour le décalage 1)</p>
+                <p>\(\phi_{22} = \phi_2\) (pour le décalage 2)</p>
+                <p>\(\phi_{hh} = 0\) pour \(h > 2\)</p>
+            </div>
+            
+            <div class="final-result">
+                \[\phi_{hh} = 
+                \begin{cases}
+                \frac{\phi_1}{1 - \phi_2} & \text{pour } h = 1 \\
+                \phi_2 & \text{pour } h = 2 \\
+                0 & \text{pour } h > 2
+                \end{cases}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Cela signifie que l'autocorrélation partielle est significative seulement aux deux premiers décalages (caractéristique d'un processus AR(2)) et nulle pour tous les autres décalages.</p>
+                <p>Cette coupure nette de la PACF au décalage p est une caractéristique générale des processus AR(p).</p>
+            </div>
+            
+            <div class="interactive-section">
+                <h3>Visualisation de l'autocorrélation partielle</h3>
+                <div class="two-cols">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="phi1-pacf">Coefficient φ₁ : <span id="phi1-value-pacf">0.5</span></label>
+                            <input type="range" id="phi1-pacf" min="-1.8" max="1.8" step="0.1" value="0.5" oninput="updatePACF()">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="phi2-pacf">Coefficient φ₂ : <span id="phi2-value-pacf">0.3</span></label>
+                            <input type="range" id="phi2-pacf" min="-0.95" max="0.95" step="0.05" value="0.3" oninput="updatePACF()">
+                        </div>
+                    </div>
+                </div>
+                <div id="stationarity-warning-pacf" style="color: red; display: none;">
+                    Attention : Ces valeurs de paramètres sont en dehors de la région de stationnarité.
+                </div>
+                <canvas id="pacf-chart"></canvas>
+            </div>
+        </div>
+        
+        <div id="simulator" class="tab-content">
+            <h2>Simulateur de Processus AR(2)</h2>
+            
+            <div class="interactive-section">
+                <h3>Paramètres du modèle</h3>
+                <div class="two-cols">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="phi1-sim">Coefficient φ₁ :</label>
+                            <input type="range" id="phi1-sim" min="-1.8" max="1.8" step="0.1" value="0.5" oninput="document.getElementById('phi1-value-sim').textContent = this.value; checkStationaritySim();">
+                            <span id="phi1-value-sim">0.5</span>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="phi2-sim">Coefficient φ₂ :</label>
+                            <input type="range" id="phi2-sim" min="-0.95" max="0.95" step="0.05" value="0.3" oninput="document.getElementById('phi2-value-sim').textContent = this.value; checkStationaritySim();">
+                            <span id="phi2-value-sim">0.3</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="stationarity-warning-sim" style="color: red; display: none; margin-bottom: 15px;">
+                    Attention : Ces valeurs de paramètres sont en dehors de la région de stationnarité.
+                </div>
+                
+                <div class="form-group">
+                    <label for="sigma-sim">Écart-type du bruit σ :</label>
+                    <input type="range" id="sigma-sim" min="0.1" max="5" step="0.1" value="1" oninput="document.getElementById('sigma-value-sim').textContent = this.value">
+                    <span id="sigma-value-sim">1</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="n-sim">Nombre d'observations :</label>
+                    <input type="range" id="n-sim" min="50" max="500" step="10" value="200" oninput="document.getElementById('n-value-sim').textContent = this.value">
+                    <span id="n-value-sim">200</span>
+                </div>
+                
+                <button onclick="simulateAR2()">Simuler le processus</button>
+                
+                <canvas id="simulation-chart"></canvas>
+                
+                <div id="properties-container">
+                    <h3>Propriétés du processus simulé</h3>
+                    <div class="two-cols">
+                        <div class="col">
+                            <div class="property-card">
+                                <div class="card-title">Moyenne théorique</div>
+                                <div id="theoretical-mean">0</div>
+                            </div>
+                            <div class="property-card">
+                                <div class="card-title">Variance théorique</div>
+                                <div id="theoretical-variance"></div>
+                            </div>
+                            <div class="property-card">
+                                <div class="card-title">ACF(1) théorique</div>
+                                <div id="theoretical-acf1"></div>
+                            </div>
+                            <div class="property-card">
+                                <div class="card-title">ACF(2) théorique</div>
+                                <div id="theoretical-acf2"></div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="property-card">
+                                <div class="card-title">Moyenne empirique</div>
+                                <div id="empirical-mean"></div>
+                            </div>
+                            <div class="property-card">
+                                <div class="card-title">Variance empirique</div>
+                                <div id="empirical-variance"></div>
+                            </div>
+                            <div class="property-card">
+                                <div class="card-title">ACF(1) empirique</div>
+                                <div id="empirical-acf1"></div>
+                            </div>
+                            <div class="property-card">
+                                <div class="card-title">ACF(2) empirique</div>
+                                <div id="empirical-acf2"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="interactive-section">
+            <h2>Résumé des propriétés statistiques de l'AR(2)</h2>
+            <div class="final-result">
+                \[\begin{align*}
+                \text{Moyenne: } & \mu = 0 \\
+                \text{Variance: } & \gamma(0) = \frac{(1-\phi_2)\sigma^2_{\varepsilon}}{(1+\phi_2)(1-\phi_2-\phi_1)(1-\phi_2+\phi_1)} \\
+                \text{Autocovariance: } & \gamma(h) = \phi_1 \gamma(h-1) + \phi_2 \gamma(h-2) \quad \text{pour } h \geq 2 \\
+                \text{Autocorrélation: } & \rho(h) = \phi_1 \rho(h-1) + \phi_2 \rho(h-2) \quad \text{pour } h \geq 3 \\
+                \text{Autocorrélation partielle: } & \phi_{hh} = 
+                \begin{cases}
+                \frac{\phi_1}{1 - \phi_2} & \text{pour } h = 1 \\
+                \phi_2 & \text{pour } h = 2 \\
+                0 & \text{pour } h > 2
+                \end{cases} \\
+                \text{Conditions de stationnarité: } & 
+                \begin{cases}
+                \phi_2 + \phi_1 < 1 \\
+                \phi_2 - \phi_1 < 1 \\
+                |\phi_2| < 1
+                \end{cases}
+                \end{align*}\]
+            </div>
+            <p>Toutes ces propriétés sont valables sous les conditions de stationnarité.</p>
+        </div>
+        
+        <footer>
+            <p>© 2023 Analyse des Séries Temporelles | Calculateur de Propriétés AR(2)</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Observer pour animer les équations au scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        document.querySelectorAll('.equation-container').forEach(eq => {
+            observer.observe(eq);
+        });
+        
+        // Gestion des onglets
+        function openTab(evt, tabName) {
+            const tabContents = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove("active");
+            }
+            
+            const tabs = document.getElementsByClassName("tab");
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove("active");
+            }
+            
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+        
+        // Vérification de stationnarité
+        function checkStationarity(phi1, phi2) {
+            return phi1 + phi2 < 1 && phi2 - phi1 < 1 && Math.abs(phi2) < 1;
+        }
+        
+        // Vérification pour le simulateur
+        function checkStationaritySim() {
+            const phi1 = parseFloat(document.getElementById('phi1-sim').value);
+            const phi2 = parseFloat(document.getElementById('phi2-sim').value);
+            
+            const isStationary = checkStationarity(phi1, phi2);
+            document.getElementById('stationarity-warning-sim').style.display = isStationary ? 'none' : 'block';
+        }
+        
+        // Calcul des autocorrélations AR(2)
+        function calculateAR2ACF(phi1, phi2, maxLag) {
+            const acf = new Array(maxLag + 1);
+            acf[0] = 1; // Pour h = 0
+            
+            // Pour h = 1
+            acf[1] = phi1 / (1 - phi2);
+            
+            // Pour h = 2
+            acf[2] = phi1 * acf[1] + phi2;
+            
+            // Pour h > 2
+            for (let h = 3; h <= maxLag; h++) {
+                acf[h] = phi1 * acf[h-1] + phi2 * acf[h-2];
+            }
+            
+            return acf;
+        }
+        
+        // Calcul des PACF AR(2)
+        function calculateAR2PACF(phi1, phi2, maxLag) {
+            const pacf = new Array(maxLag + 1);
+            pacf[0] = 1; // Pour h = 0
+            pacf[1] = phi1 / (1 - phi2); // Pour h = 1
+            pacf[2] = phi2; // Pour h = 2
+            
+            // Pour h > 2
+            for (let h = 3; h <= maxLag; h++) {
+                pacf[h] = 0;
+            }
+            
+            return pacf;
+        }
+        
+        // Tracé de la région de stationnarité
+        function drawStationarityRegion() {
+            const canvas = document.getElementById('stationarity-plot');
+            const ctx = canvas.getContext('2d');
+            
+            // Effacer le canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Paramètres de dessin
+            const scale = 80; // Facteur d'échelle
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            // Tracer les axes
+            ctx.beginPath();
+            ctx.strokeStyle = 'black';
+            ctx.lineWidth = 1;
+            ctx.moveTo(0, centerY);
+            ctx.lineTo(canvas.width, centerY);
+            ctx.moveTo(centerX, 0);
+            ctx.lineTo(centerX, canvas.height);
+            ctx.stroke();
+            
+            // Étiquettes des axes
+            ctx.fillStyle = 'black';
+            ctx.font = '12px Arial';
+            ctx.fillText('φ₁', canvas.width - 15, centerY - 5);
+            ctx.fillText('φ₂', centerX + 5, 15);
+            
+            // Tracer la ligne φ₂ + φ₁ = 1
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(39, 174, 96, 0.8)';
+            ctx.lineWidth = 2;
+            ctx.moveTo(centerX - 2 * scale, centerY - scale);
+            ctx.lineTo(centerX + 2 * scale, centerY + scale);
+            ctx.stroke();
+            ctx.fillText('φ₂ + φ₁ = 1', centerX + scale, centerY + scale / 2);
+            
+            // Tracer la ligne φ₂ - φ₁ = 1
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(22, 160, 133, 0.8)';
+            ctx.lineWidth = 2;
+            ctx.moveTo(centerX - 2 * scale, centerY + scale);
+            ctx.lineTo(centerX + 2 * scale, centerY - scale);
+            ctx.stroke();
+            ctx.fillText('φ₂ - φ₁ = 1', centerX + scale, centerY - scale / 2);
+            
+            // Tracer la ligne φ₂ = -1
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(142, 68, 173, 0.8)';
+            ctx.lineWidth = 2;
+            ctx.moveTo(centerX - 2 * scale, centerY + scale);
+            ctx.lineTo(centerX + 2 * scale, centerY + scale);
+            ctx.stroke();
+            ctx.fillText('φ₂ = -1', centerX - 1.5 * scale, centerY + scale + 15);
+            
+            // Tracer la ligne φ₂ = 1
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(142, 68, 173, 0.8)';
+            ctx.lineWidth = 2;
+            ctx.moveTo(centerX - 2 * scale, centerY - scale);
+            ctx.lineTo(centerX + 2 * scale, centerY - scale);
+            ctx.stroke();
+            ctx.fillText('φ₂ = 1', centerX - 1.5 * scale, centerY - scale - 5);
+            
+            // Remplir la région de stationnarité
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(centerX + scale, centerY - scale);
+            ctx.lineTo(centerX, centerY - scale);
+            ctx.lineTo(centerX - scale, centerY - scale);
+            ctx.lineTo(centerX - 2 * scale, centerY);
+            ctx.lineTo(centerX - scale, centerY + scale);
+            ctx.lineTo(centerX, centerY + scale);
+            ctx.lineTo(centerX + scale, centerY + scale);
+            ctx.lineTo(centerX + 2 * scale, centerY);
+            ctx.lineTo(centerX + scale, centerY - scale);
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(39, 174, 96, 0.2)';
+            ctx.fill();
+            
+            // Marquer l'origine
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 3, 0, 2 * Math.PI);
+            ctx.fillStyle = 'black';
+            ctx.fill();
+            ctx.fillText('(0,0)', centerX + 5, centerY + 15);
+            
+            // Point actuel pour ACF
+            const phi1ACF = parseFloat(document.getElementById('phi1-acf').value);
+            const phi2ACF = parseFloat(document.getElementById('phi2-acf').value);
+            
+            ctx.beginPath();
+            ctx.arc(centerX + phi1ACF * scale, centerY - phi2ACF * scale, 5, 0, 2 * Math.PI);
+            ctx.fillStyle = 'rgba(22, 160, 133, 0.8)';
+            ctx.fill();
+            
+            // Point actuel pour PACF
+            const phi1PACF = parseFloat(document.getElementById('phi1-pacf').value);
+            const phi2PACF = parseFloat(document.getElementById('phi2-pacf').value);
+            
+            if (phi1PACF !== phi1ACF || phi2PACF !== phi2ACF) {
+                ctx.beginPath();
+                ctx.arc(centerX + phi1PACF * scale, centerY - phi2PACF * scale, 5, 0, 2 * Math.PI);
+                ctx.fillStyle = 'rgba(142, 68, 173, 0.8)';
+                ctx.fill();
+            }
+        }
+        
+        // Graphique ACF
+        let acfChart;
+        function updateACF() {
+            const phi1 = parseFloat(document.getElementById('phi1-acf').value);
+            const phi2 = parseFloat(document.getElementById('phi2-acf').value);
+            
+            document.getElementById('phi1-value-acf').textContent = phi1.toFixed(2);
+            document.getElementById('phi2-value-acf').textContent = phi2.toFixed(2);
+            
+            const isStationary = checkStationarity(phi1, phi2);
+            document.getElementById('stationarity-warning-acf').style.display = isStationary ? 'none' : 'block';
+            
+            const lags = Array.from({length: 21}, (_, i) => i);
+            const acfValues = isStationary ? calculateAR2ACF(phi1, phi2, 20) : lags.map(() => 0);
+            
+            if (acfChart) acfChart.destroy();
+            
+            acfChart = new Chart(
+                document.getElementById('acf-chart'),
+                {
+                    type: 'bar',
+                    data: {
+                        labels: lags,
+                        datasets: [{
+                            label: 'ACF',
+                            data: acfValues,
+                            backgroundColor: acfValues.map((v, i) => i === 0 ? 'rgba(22, 160, 133, 0.7)' : Math.abs(v) > 2/Math.sqrt(100) ? 'rgba(142, 68, 173, 0.7)' : 'rgba(22, 160, 133, 0.7)'),
+                            borderColor: 'rgba(22, 160, 133, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                min: -1,
+                                max: 1
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `Fonction d'Autocorrélation pour AR(2) avec φ₁ = ${phi1.toFixed(2)}, φ₂ = ${phi2.toFixed(2)}`
+                            }
+                        }
+                    }
+                }
+            );
+            
+            // Mettre à jour la région de stationnarité
+            drawStationarityRegion();
+        }
+        
+        // Graphique PACF
+        let pacfChart;
+        function updatePACF() {
+            const phi1 = parseFloat(document.getElementById('phi1-pacf').value);
+            const phi2 = parseFloat(document.getElementById('phi2-pacf').value);
+            
+            document.getElementById('phi1-value-pacf').textContent = phi1.toFixed(2);
+            document.getElementById('phi2-value-pacf').textContent = phi2.toFixed(2);
+            
+            const isStationary = checkStationarity(phi1, phi2);
+            document.getElementById('stationarity-warning-pacf').style.display = isStationary ? 'none' : 'block';
+            
+            const lags = Array.from({length: 21}, (_, i) => i);
+            const pacfValues = isStationary ? calculateAR2PACF(phi1, phi2, 20) : lags.map(() => 0);
+            
+            if (pacfChart) pacfChart.destroy();
+            
+            pacfChart = new Chart(
+                document.getElementById('pacf-chart'),
+                {
+                    type: 'bar',
+                    data: {
+                        labels: lags,
+                        datasets: [{
+                            label: 'PACF',
+                            data: pacfValues,
+                            backgroundColor: pacfValues.map((v, i) => i === 0 ? 'rgba(22, 160, 133, 0.7)' : Math.abs(v) > 2/Math.sqrt(100) ? 'rgba(142, 68, 173, 0.7)' : 'rgba(22, 160, 133, 0.7)'),
+                            borderColor: 'rgba(22, 160, 133, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                min: -1,
+                                max: 1
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `Fonction d'Autocorrélation Partielle pour AR(2) avec φ₁ = ${phi1.toFixed(2)}, φ₂ = ${phi2.toFixed(2)}`
+                            }
+                        }
+                    }
+                }
+            );
+            
+            // Mettre à jour la région de stationnarité
+            drawStationarityRegion();
+        }
+        
+        // Simulateur AR(2)
+        let simChart;
+        function simulateAR2() {
+            const phi1 = parseFloat(document.getElementById('phi1-sim').value);
+            const phi2 = parseFloat(document.getElementById('phi2-sim').value);
+            const sigma = parseFloat(document.getElementById('sigma-sim').value);
+            const n = parseInt(document.getElementById('n-sim').value);
+            
+            const isStationary = checkStationarity(phi1, phi2);
+            document.getElementById('stationarity-warning-sim').style.display = isStationary ? 'none' : 'block';
+            
+            // Générer les données AR(2)
+            const errors = new Array(n + 2);
+            for (let i = 0; i < n + 2; i++) {
+                errors[i] = sigma * randn();
+            }
+            
+            const data = new Array(n);
+            // Initialiser les premières valeurs
+            data[0] = errors[0];
+            data[1] = phi1 * data[0] + errors[1];
+            
+            // Générer le reste des données
+            for (let i = 2; i < n; i++) {
+                data[i] = phi1 * data[i-1] + phi2 * data[i-2] + errors[i];
+            }
+            
+            // Calculer les statistiques empiriques
+            const mean = data.reduce((a, b) => a + b, 0) / n;
+            const variance = data.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / n;
+            
+            // Calculer les autocorrélations empiriques
+            let acf1 = 0, acf2 = 0;
+            for (let i = 0; i < n - 1; i++) {
+                acf1 += (data[i] - mean) * (data[i+1] - mean);
+            }
+            acf1 = acf1 / ((n-1) * variance);
+            
+            for (let i = 0; i < n - 2; i++) {
+                acf2 += (data[i] - mean) * (data[i+2] - mean);
+            }
+            acf2 = acf2 / ((n-2) * variance);
+            
+            // Calculer les statistiques théoriques
+            let theoreticalVariance = 0;
+            let theoreticalACF1 = 0;
+            let theoreticalACF2 = 0;
+            
+            if (isStationary) {
+                theoreticalVariance = ((1 - phi2) * sigma * sigma) / ((1 + phi2) * (1 - phi2 - phi1) * (1 - phi2 + phi1));
+                theoreticalACF1 = phi1 / (1 - phi2);
+                theoreticalACF2 = phi1 * theoreticalACF1 + phi2;
+            } else {
+                theoreticalVariance = "Non définie (modèle non stationnaire)";
+                theoreticalACF1 = "Non définie";
+                theoreticalACF2 = "Non définie";
+            }
+            
+            // Afficher les statistiques
+            document.getElementById('theoretical-mean').textContent = "0";
+            document.getElementById('theoretical-variance').textContent = isStationary ? theoreticalVariance.toFixed(4) : theoreticalVariance;
+            document.getElementById('theoretical-acf1').textContent = isStationary ? theoreticalACF1.toFixed(4) : theoreticalACF1;
+            document.getElementById('theoretical-acf2').textContent = isStationary ? theoreticalACF2.toFixed(4) : theoreticalACF2;
+            
+            document.getElementById('empirical-mean').textContent = mean.toFixed(4);
+            document.getElementById('empirical-variance').textContent = variance.toFixed(4);
+            document.getElementById('empirical-acf1').textContent = acf1.toFixed(4);
+            document.getElementById('empirical-acf2').textContent = acf2.toFixed(4);
+            
+            // Tracer la série temporelle
+            if (simChart) simChart.destroy();
+            
+            simChart = new Chart(
+                document.getElementById('simulation-chart'),
+                {
+                    type: 'line',
+                    data: {
+                        labels: Array.from({length: n}, (_, i) => i + 1),
+                        datasets: [{
+                            label: 'Série AR(2) simulée',
+                            data: data,
+                            borderColor: 'rgba(22, 160, 133, 1)',
+                            backgroundColor: 'rgba(22, 160, 133, 0.1)',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            fill: true,
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `Simulation AR(2) avec φ₁ = ${phi1.toFixed(2)}, φ₂ = ${phi2.toFixed(2)}, σ = ${sigma.toFixed(2)}`
+                            }
+                        },
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
+                        }
+                    }
+                }
+            );
+        }
+        
+        // Fonction pour générer des nombres aléatoires selon une loi normale
+        function randn() {
+            let u = 0, v = 0;
+            while (u === 0) u = Math.random();
+            while (v === 0) v = Math.random();
+            return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+        }
+        
+        // Initialiser les graphiques
+        document.addEventListener('DOMContentLoaded', function() {
+            drawStationarityRegion();
+            updateACF();
+            updatePACF();
+            simulateAR2();
+            checkStationaritySim();
+        });
+    </script>
+</body>
+</html>

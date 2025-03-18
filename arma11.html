@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Propriétés statistiques d'un processus ARMA(1,1)</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        :root {
+            --primary-color: #9b59b6;
+            --secondary-color: #8e44ad;
+            --accent-color: #2ecc71;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-color);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            overflow: hidden;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--light-color);
+            padding-bottom: 20px;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        h2 {
+            color: var(--secondary-color);
+            font-size: 1.8rem;
+            margin: 30px 0 15px;
+            padding-left: 10px;
+            border-left: 5px solid var(--secondary-color);
+        }
+        
+        .equation-container {
+            background-color: var(--light-color);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            transition: transform 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .step-explanation {
+            margin: 15px 0;
+        }
+        
+        .definition {
+            background-color: rgba(142, 68, 173, 0.1);
+            padding: 15px;
+            border-left: 4px solid var(--secondary-color);
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .final-result {
+            background-color: rgba(46, 204, 113, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid var(--accent-color);
+            font-weight: bold;
+        }
+        
+        .interactive-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input[type="range"], input[type="number"] {
+            width: 100%;
+        }
+        
+        button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: var(--primary-color);
+        }
+        
+        .property-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .property-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-title {
+            font-size: 1.3rem;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        
+        canvas {
+            width: 100%;
+            height: 300px;
+            margin: 20px 0;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            color: var(--dark-color);
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #f1f1f1;
+            border: none;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            border-radius: 5px 5px 0 0;
+        }
+        
+        .tab.active {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .two-cols {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .col {
+            flex: 1 1 45%;
+            min-width: 300px;
+        }
+        
+        .stationarity-region {
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .img-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .img-container img {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .note {
+            background-color: rgba(241, 196, 15, 0.1);
+            padding: 15px;
+            border-left: 4px solid #f1c40f;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                margin-right: 0;
+                border-radius: 5px;
+            }
+            
+            .two-cols {
+                flex-direction: column;
+            }
+            
+            .col {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="animate__animated animate__fadeInDown">
+            <h1>Processus ARMA(1,1)</h1>
+            <p>Analyse détaillée des propriétés statistiques d'un ARMA(1,1)</p>
+        </header>
+        
+        <div class="definition animate__animated animate__fadeIn">
+            <p>Un processus ARMA(1,1) est défini par l'équation :
+            \[X_t = \phi X_{t-1} + \varepsilon_t + \theta \varepsilon_{t-1}\]
+            où \(\varepsilon_t \sim \text{WN}(0, \sigma^2_{\varepsilon})\) est un bruit blanc de moyenne nulle et de variance \(\sigma^2_{\varepsilon}\).</p>
+            <p>Ce processus combine des caractéristiques des processus AR(1) et MA(1), ce qui en fait un modèle plus flexible pour capturer la dynamique des séries temporelles.</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="openTab(event, 'stationarity')">Stationnarité et Inversibilité</button>
+            <button class="tab" onclick="openTab(event, 'mean')">Moyenne</button>
+            <button class="tab" onclick="openTab(event, 'variance')">Variance</button>
+            <button class="tab" onclick="openTab(event, 'autocovariance')">Autocovariance</button>
+            <button class="tab" onclick="openTab(event, 'autocorrelation')">Autocorrélation</button>
+            <button class="tab" onclick="openTab(event, 'pacf')">PACF</button>
+            <button class="tab" onclick="openTab(event, 'simulator')">Simulateur</button>
+        </div>
+        
+        <div id="stationarity" class="tab-content active">
+            <h2>Stationnarité et Inversibilité</h2>
+            
+            <div class="equation-container">
+                <p>Un processus ARMA(1,1) peut être exprimé sous forme polynomiale avec l'opérateur de retard \(L\) :</p>
+                \[X_t - \phi X_{t-1} = \varepsilon_t + \theta \varepsilon_{t-1}\]
+                \[(1 - \phi L) X_t = (1 + \theta L) \varepsilon_t\]
+            </div>
+            
+            <div class="step-explanation">
+                <h3>Condition de Stationnarité</h3>
+                <p>Pour qu'un processus ARMA(1,1) soit stationnaire, il faut que les racines du polynôme autorégressif \((1 - \phi z)\) soient de module strictement supérieur à 1. Cela se traduit par la condition suivante :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[|\phi| < 1\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Cette condition est identique à celle d'un processus AR(1). Elle est nécessaire et suffisante pour garantir que le processus est stationnaire.</p>
+            </div>
+            
+            <div class="step-explanation">
+                <h3>Condition d'Inversibilité</h3>
+                <p>Pour qu'un processus ARMA(1,1) soit inversible, il faut que les racines du polynôme de moyenne mobile \((1 + \theta z)\) soient de module strictement supérieur à 1. Cela se traduit par la condition suivante :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[|\theta| < 1\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Cette condition est identique à celle d'un processus MA(1). L'inversibilité permet d'exprimer le processus sous forme d'un AR(∞).</p>
+            </div>
+            
+            <div class="final-result">
+                <p>Pour qu'un processus ARMA(1,1) soit à la fois stationnaire et inversible, il faut donc que :</p>
+                \[|\phi| < 1 \quad \text{et} \quad |\theta| < 1\]
+            </div>
+            
+            <div class="img-container">
+                <h3>Région de stationnarité et d'inversibilité pour un ARMA(1,1)</h3>
+                <canvas id="stationarity-plot" width="400" height="400"></canvas>
+            </div>
+            
+            <div class="note">
+                <p><strong>Remarque importante :</strong> Dans le cas d'un ARMA(1,1), si \(\phi = \theta\), il y a une annulation de racines communes entre les polynômes AR et MA, conduisant à un processus de bruit blanc. Ce cas est à éviter en modélisation car il conduit à une surparamétrisation.</p>
+            </div>
+        </div>
+        
+        <div id="mean" class="tab-content">
+            <h2>Calcul de la Moyenne</h2>
+            
+            <div class="equation-container">
+                <p>Prenons l'espérance de \(X_t\) :</p>
+                \[E[X_t] = E[\phi X_{t-1} + \varepsilon_t + \theta \varepsilon_{t-1}] = \phi E[X_{t-1}] + E[\varepsilon_t] + \theta E[\varepsilon_{t-1}]\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Comme \(E[\varepsilon_t] = E[\varepsilon_{t-1}] = 0\) (propriété du bruit blanc) et en supposant que le processus est stationnaire (c'est-à-dire \(E[X_t] = E[X_{t-1}] = \mu\)), nous obtenons :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\mu = \phi \mu + 0 + \theta \cdot 0 = \phi \mu\]
+                \[\mu(1 - \phi) = 0\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Si \(\phi \neq 1\) (ce qui est garanti par la condition de stationnarité \(|\phi| < 1\)), alors :</p>
+            </div>
+            
+            <div class="final-result">
+                \[\mu = E[X_t] = 0\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>La moyenne d'un processus ARMA(1,1) stationnaire sans constante est toujours égale à 0.</p>
+                <p>Si le processus inclut une constante \(c\) dans son équation (\(X_t = c + \phi X_{t-1} + \varepsilon_t + \theta \varepsilon_{t-1}\)), alors la moyenne serait \(\mu = \frac{c}{1-\phi}\).</p>
+            </div>
+        </div>
+        
+        <div id="variance" class="tab-content">
+            <h2>Calcul de la Variance</h2>
+            
+            <div class="equation-container">
+                <p>Pour un processus stationnaire, la variance est constante :</p>
+                \[\text{Var}(X_t) = \text{Var}(X_{t-1}) = \gamma(0)\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Calculons la variance de \(X_t\) :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\begin{align*}
+                \text{Var}(X_t) &= \text{Var}(\phi X_{t-1} + \varepsilon_t + \theta \varepsilon_{t-1}) \\
+                &= \phi^2 \text{Var}(X_{t-1}) + \text{Var}(\varepsilon_t) + \theta^2 \text{Var}(\varepsilon_{t-1}) + 2\phi\theta\text{Cov}(X_{t-1}, \varepsilon_{t-1})
+                \end{align*}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Comme \(X_{t-1}\) dépend de \(\varepsilon_{t-1}\), nous devons calculer leur covariance. Pour un processus ARMA(1,1) stationnaire :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\text{Cov}(X_{t-1}, \varepsilon_{t-1}) = \sigma^2_{\varepsilon}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>En substituant cette covariance et sachant que \(\text{Var}(X_{t-1}) = \gamma(0)\) et \(\text{Var}(\varepsilon_{t}) = \text{Var}(\varepsilon_{t-1}) = \sigma^2_{\varepsilon}\) :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\gamma(0) = \phi^2 \gamma(0) + \sigma^2_{\varepsilon} + \theta^2 \sigma^2_{\varepsilon} + 2\phi\theta\sigma^2_{\varepsilon}\]
+                \[\gamma(0)(1 - \phi^2) = \sigma^2_{\varepsilon}(1 + \theta^2 + 2\phi\theta)\]
+                \[\gamma(0)(1 - \phi^2) = \sigma^2_{\varepsilon}(1 + \theta)^2 + \sigma^2_{\varepsilon}(\theta^2 + 2\phi\theta - \theta^2 - 2\theta)\]
+                \[\gamma(0)(1 - \phi^2) = \sigma^2_{\varepsilon}(1 + \theta)^2 + \sigma^2_{\varepsilon}(2\phi\theta - 2\theta)\]
+                \[\gamma(0)(1 - \phi^2) = \sigma^2_{\varepsilon}(1 + \theta)^2 + 2\sigma^2_{\varepsilon}\theta(\phi - 1)\]
+            </div>
+            
+            <div class="final-result">
+                \[\gamma(0) = \frac{\sigma^2_{\varepsilon}(1 + \theta^2 + 2\phi\theta)}{1 - \phi^2} = \frac{\sigma^2_{\varepsilon}(1 + \theta)^2 + 2\sigma^2_{\varepsilon}\theta(\phi - 1)}{1 - \phi^2}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Cette variance existe seulement si la condition de stationnarité \(|\phi| < 1\) est respectée.</p>
+                <p>Une forme plus compacte et souvent utilisée pour la variance est :</p>
+            </div>
+            
+            <div class="final-result">
+                \[\gamma(0) = \sigma^2_{\varepsilon}\frac{1 + 2\theta\phi + \theta^2}{1 - \phi^2}\]
+            </div>
+        </div>
+        
+        <div id="autocovariance" class="tab-content">
+            <h2>Calcul de l'Autocovariance</h2>
+            
+            <div class="equation-container">
+                <p>L'autocovariance à un décalage \(h\) est définie par :</p>
+                \[\gamma(h) = \text{Cov}(X_t, X_{t+h})\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Pour \(h = 1\), nous calculons \(\gamma(1) = \text{Cov}(X_t, X_{t+1})\). En utilisant la définition du processus :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\begin{align*}
+                \gamma(1) &= \text{Cov}(X_t, \phi X_t + \varepsilon_{t+1} + \theta \varepsilon_t) \\
+                &= \phi \text{Cov}(X_t, X_t) + \text{Cov}(X_t, \varepsilon_{t+1}) + \theta \text{Cov}(X_t, \varepsilon_t)
+                \end{align*}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Comme \(\text{Cov}(X_t, X_t) = \gamma(0)\) et \(\text{Cov}(X_t, \varepsilon_{t+1}) = 0\) (car \(\varepsilon_{t+1}\) est indépendant de tout ce qui se passe jusqu'à \(t\)), il nous reste à calculer \(\text{Cov}(X_t, \varepsilon_t)\).</p>
+                <p>Pour un processus ARMA(1,1) stationnaire, on peut montrer que :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\text{Cov}(X_t, \varepsilon_t) = \sigma^2_{\varepsilon}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>En substituant ces valeurs :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\gamma(1) = \phi \gamma(0) + 0 + \theta \sigma^2_{\varepsilon} = \phi \gamma(0) + \theta \sigma^2_{\varepsilon}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Pour \(h \geq 2\), nous pouvons utiliser la récurrence suivante :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\gamma(h) = \phi \gamma(h-1) \quad \text{pour } h \geq 2\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>En développant cette récurrence et en substituant l'expression pour \(\gamma(1)\) :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\gamma(h) = \phi^{h-1} \gamma(1) = \phi^{h-1} [\phi \gamma(0) + \theta \sigma^2_{\varepsilon}] = \phi^h \gamma(0) + \phi^{h-1} \theta \sigma^2_{\varepsilon}\]
+            </div>
+            
+            <div class="final-result">
+                \[\gamma(h) = 
+                \begin{cases}
+                \sigma^2_{\varepsilon}\frac{1 + 2\theta\phi + \theta^2}{1 - \phi^2} & \text{pour } h = 0 \\
+                \phi \gamma(0) + \theta \sigma^2_{\varepsilon} & \text{pour } h = 1 \\
+                \phi^h \gamma(0) + \phi^{h-1} \theta \sigma^2_{\varepsilon} & \text{pour } h \geq 2
+                \end{cases}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Cette structure de l'autocovariance montre comment les processus ARMA(1,1) combinent les caractéristiques de décroissance exponentielle des AR(1) (via le terme \(\phi^h\)) avec les effets à court terme des MA(1) (via le terme \(\theta\)).</p>
+            </div>
+        </div>
+        
+        <div id="autocorrelation" class="tab-content">
+            <h2>Calcul de l'Autocorrélation (ACF)</h2>
+            
+            <div class="equation-container">
+                <p>L'autocorrélation à un décalage \(h\) est définie par :</p>
+                \[\rho(h) = \frac{\gamma(h)}{\gamma(0)}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>En utilisant les résultats précédents pour l'autocovariance :</p>
+            </div>
+            
+            <div class="equation-container">
+                <p>Pour \(h = 1\) :</p>
+                \[\rho(1) = \frac{\gamma(1)}{\gamma(0)} = \frac{\phi \gamma(0) + \theta \sigma^2_{\varepsilon}}{\gamma(0)} = \phi + \frac{\theta \sigma^2_{\varepsilon}}{\gamma(0)}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>En substituant l'expression de \(\gamma(0)\) :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\rho(1) = \phi + \theta\frac{\sigma^2_{\varepsilon}}{\sigma^2_{\varepsilon}\frac{1 + 2\theta\phi + \theta^2}{1 - \phi^2}} = \phi + \theta\frac{1 - \phi^2}{1 + 2\theta\phi + \theta^2}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Après simplification :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\rho(1) = \frac{(1+\theta\phi)(1-\phi^2) + \theta(1-\phi^2)}{(1 + 2\theta\phi + \theta^2)(1-\phi)} = \frac{(1+\theta\phi+\theta)(1-\phi^2)}{(1 + \theta)^2(1-\phi^2)} = \frac{(1+\theta\phi+\theta)}{(1 + \theta)^2}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Une forme plus compacte pour \(\rho(1)\) est :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\rho(1) = \frac{(\phi+\theta)(1+\phi\theta)}{1+2\phi\theta+\theta^2}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Pour \(h \geq 2\), la récurrence utilisée pour l'autocovariance donne :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\rho(h) = \phi \rho(h-1) \quad \text{pour } h \geq 2\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>En développant cette récurrence :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\rho(h) = \phi^{h-1} \rho(1) \quad \text{pour } h \geq 2\]
+            </div>
+            
+            <div class="final-result">
+                \[\rho(h) = 
+                \begin{cases}
+                1 & \text{pour } h = 0 \\
+                \frac{(\phi+\theta)(1+\phi\theta)}{1+2\phi\theta+\theta^2} & \text{pour } h = 1 \\
+                \phi^{h-1} \rho(1) & \text{pour } h \geq 2
+                \end{cases}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>L'ACF d'un processus ARMA(1,1) a une structure particulière : après le premier décalage, elle décroît exponentiellement au taux \(\phi\), comme pour un AR(1). Cependant, la valeur à \(h=1\) est influencée à la fois par les paramètres \(\phi\) et \(\theta\).</p>
+            </div>
+            
+            <div class="interactive-section">
+                <h3>Visualisation de l'autocorrélation</h3>
+                <div class="two-cols">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="phi-acf">Coefficient φ : <span id="phi-value-acf">0.7</span></label>
+                            <input type="range" id="phi-acf" min="-0.95" max="0.95" step="0.05" value="0.7" oninput="updateACF()">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="theta-acf">Coefficient θ : <span id="theta-value-acf">0.3</span></label>
+                            <input type="range" id="theta-acf" min="-0.95" max="0.95" step="0.05" value="0.3" oninput="updateACF()">
+                        </div>
+                    </div>
+                </div>
+                <div id="stationarity-warning-acf" style="color: red; display: none;">
+                    Attention : La valeur de φ est en dehors de la région de stationnarité.
+                </div>
+                <div id="invertibility-warning-acf" style="color: orange; display: none;">
+                    Attention : La valeur de θ est en dehors de la région d'inversibilité.
+                </div>
+                <canvas id="acf-chart"></canvas>
+            </div>
+        </div>
+        
+        <div id="pacf" class="tab-content">
+            <h2>Calcul de l'Autocorrélation Partielle (PACF)</h2>
+            
+            <div class="equation-container">
+                <p>Pour un processus ARMA(1,1), la fonction d'autocorrélation partielle (PACF) est plus complexe à calculer analytiquement.</p>
+            </div>
+            
+            <div class="step-explanation">
+                <p>Contrairement à l'ACF qui a une forme explicite, la PACF d'un ARMA(1,1) n'a pas de formule simple pour tous les décalages. Voici quelques caractéristiques importantes :</p>
+                <ul>
+                    <li>Pour \(h = 1\), la PACF est égale à l'ACF : \(\phi_{11} = \rho(1)\)</li>
+                    <li>Pour \(h > 1\), la PACF décroît de façon approximativement exponentielle, mais pas aussi nettement que l'ACF</li>
+                    <li>Cette décroissance est influencée à la fois par les paramètres AR (\(\phi\)) et MA (\(\theta\))</li>
+                </ul>
+                <p>En pratique, pour calculer la PACF d'un ARMA(1,1), on utilise des algorithmes récursifs comme l'algorithme de Durbin-Levinson qui résout les équations de Yule-Walker.</p>
+            </div>
+            
+            <div class="final-result">
+                <p>La PACF d'un processus ARMA(1,1) ne présente pas de coupure nette, contrairement à celle d'un AR(p) pur. Elle décroît de façon exponentielle, ce qui peut rendre difficile l'identification visuelle de l'ordre du modèle à partir de la PACF.</p>
+            </div>
+            
+            <div class="interactive-section">
+                <h3>Visualisation de l'autocorrélation partielle</h3>
+                <div class="two-cols">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="phi-pacf">Coefficient φ : <span id="phi-value-pacf">0.7</span></label>
+                            <input type="range" id="phi-pacf" min="-0.95" max="0.95" step="0.05" value="0.7" oninput="updatePACF()">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="theta-pacf">Coefficient θ : <span id="theta-value-pacf">0.3</span></label>
+                            <input type="range" id="theta-pacf" min="-0.95" max="0.95" step="0.05" value="0.3" oninput="updatePACF()">
+                        </div>
+                    </div>
+                </div>
+                <div id="stationarity-warning-pacf" style="color: red; display: none;">
+                    Attention : La valeur de φ est en dehors de la région de stationnarité.
+                </div>
+                <div id="invertibility-warning-pacf" style="color: orange; display: none;">
+                    Attention : La valeur de θ est en dehors de la région d'inversibilité.
+                </div>
+                <canvas id="pacf-chart"></canvas>
+            </div>
+        </div>
+        
+        <div id="simulator" class="tab-content">
+            <h2>Simulateur de Processus ARMA(1,1)</h2>
+            
+            <div class="interactive-section">
+                <h3>Paramètres du modèle</h3>
+                <div class="two-cols">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="phi-sim">Coefficient AR (φ) :</label>
+                            <input type="range" id="phi-sim" min="-0.95" max="0.95" step="0.05" value="0.7" oninput="document.getElementById('phi-value-sim').textContent = this.value; checkSimParameters();">
+                            <span id="phi-value-sim">0.7</span>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="theta-sim">Coefficient MA (θ) :</label>
+                            <input type="range" id="theta-sim" min="-0.95" max="0.95" step="0.05" value="0.3" oninput="document.getElementById('theta-value-sim').textContent = this.value; checkSimParameters();">
+                            <span id="theta-value-sim">0.3</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="stationarity-warning-sim" style="color: red; display: none; margin-bottom: 5px;">
+                    Attention : La valeur de φ est en dehors de la région de stationnarité.
+                </div>
+                <div id="invertibility-warning-sim" style="color: orange; display: none; margin-bottom: 15px;">
+                    Attention : La valeur de θ est en dehors de la région d'inversibilité.
+                </div>
+                <div id="common-roots-warning" style="color: purple; display: none; margin-bottom: 15px;">
+                    Attention : φ ≈ θ, ce qui peut conduire à une annulation de racines (surparamétrisation).
+                </div>
+                
+                <div class="form-group">
+                    <label for="sigma-sim">Écart-type du bruit σ :</label>
+                    <input type="range" id="sigma-sim" min="0.1" max="5" step="0.1" value="1" oninput="document.getElementById('sigma-value-sim').textContent = this.value">
+                    <span id="sigma-value-sim">1</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="n-sim">Nombre d'observations :</label>
+                    <input type="range" id="n-sim" min="50" max="500" step="10" value="200" oninput="document.getElementById('n-value-sim').textContent = this.value">
+                    <span id="n-value-sim">200</span>
+                </div>
+                
+                <button onclick="simulateARMA11()">Simuler le processus</button>
+                
+                <canvas id="simulation-chart"></canvas>
+                
+                <div id="properties-container">
+                    <h3>Propriétés du processus simulé</h3>
+                    <div class="two-cols">
+                        <div class="col">
+                            <div class="property-card">
+                                <div class="card-title">Moyenne théorique</div>
+                                <div id="theoretical-mean">0</div>
+                            </div>
+                            <div class="property-card">
+                                <div class="card-title">Variance théorique</div>
+                                <div id="theoretical-variance"></div>
+                            </div>
+                            <div class="property-card">
+                                <div class="card-title">ACF(1) théorique</div>
+                                <div id="theoretical-acf1"></div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="property-card">
+                                <div class="card-title">Moyenne empirique</div>
+                                <div id="empirical-mean"></div>
+                            </div>
+                            <div class="property-card">
+                                <div class="card-title">Variance empirique</div>
+                                <div id="empirical-variance"></div>
+                            </div>
+                            <div class="property-card">
+                                <div class="card-title">ACF(1) empirique</div>
+                                <div id="empirical-acf1"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="interactive-section">
+            <h2>Résumé des propriétés statistiques de l'ARMA(1,1)</h2>
+            <div class="final-result">
+                \[\begin{align*}
+                \text{Moyenne: } & \mu = 0 \\
+                \text{Variance: } & \gamma(0) = \sigma^2_{\varepsilon}\frac{1 + 2\theta\phi + \theta^2}{1 - \phi^2} \\
+                \text{Autocovariance: } & \gamma(h) = 
+                \begin{cases}
+                \phi \gamma(0) + \theta \sigma^2_{\varepsilon} & \text{pour } h = 1 \\
+                \phi^h \gamma(0) + \phi^{h-1} \theta \sigma^2_{\varepsilon} & \text{pour } h \geq 2
+                \end{cases} \\
+                \text{Autocorrélation: } & \rho(h) = 
+                \begin{cases}
+                \frac{(\phi+\theta)(1+\phi\theta)}{1+2\phi\theta+\theta^2} & \text{pour } h = 1 \\
+                \phi^{h-1} \rho(1) & \text{pour } h \geq 2
+                \end{cases} \\
+                \text{Conditions: } & 
+                \begin{cases}
+                |\phi| < 1 & \text{(stationnarité)} \\
+                |\theta| < 1 & \text{(inversibilité)}
+                \end{cases}
+                \end{align*}\]
+            </div>
+            <p>Ces propriétés montrent comment l'ARMA(1,1) combine les caractéristiques des processus AR(1) et MA(1), offrant un modèle plus flexible pour de nombreuses séries temporelles.</p>
+        </div>
+        
+        <footer>
+            <p>© 2023 Analyse des Séries Temporelles | Calculateur de Propriétés ARMA(1,1)</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Observer pour animer les équations au scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        document.querySelectorAll('.equation-container').forEach(eq => {
+            observer.observe(eq);
+        });
+        
+        // Gestion des onglets
+        function openTab(evt, tabName) {
+            const tabContents = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove("active");
+            }
+            
+            const tabs = document.getElementsByClassName("tab");
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove("active");
+            }
+            
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+        
+        // Vérification des paramètres
+        function checkStationary(phi) {
+            return Math.abs(phi) < 1;
+        }
+        
+        function checkInvertible(theta) {
+            return Math.abs(theta) < 1;
+        }
+        
+        function checkCommonRoots(phi, theta) {
+            return Math.abs(phi - theta) < 0.1;
+        }
+        
+        // Vérification pour le simulateur
+        function checkSimParameters() {
+            const phi = parseFloat(document.getElementById('phi-sim').value);
+            const theta = parseFloat(document.getElementById('theta-sim').value);
+            
+            const isStationary = checkStationary(phi);
+            const isInvertible = checkInvertible(theta);
+            const hasCommonRoots = checkCommonRoots(phi, theta);
+            
+            document.getElementById('stationarity-warning-sim').style.display = isStationary ? 'none' : 'block';
+            document.getElementById('invertibility-warning-sim').style.display = isInvertible ? 'none' : 'block';
+            document.getElementById('common-roots-warning').style.display = hasCommonRoots ? 'block' : 'none';
+        }
+        
+        // Calcul des autocorrélations ARMA(1,1)
+        function calculateARMA11ACF(phi, theta, maxLag) {
+            const acf = new Array(maxLag + 1);
+            
+            // Pour h = 0, rho(0) = 1
+            acf[0] = 1;
+            
+            // Pour h = 1
+            acf[1] = (phi + theta) * (1 + phi * theta) / (1 + 2 * phi * theta + theta * theta);
+            
+            // Pour h >= 2
+            for (let h = 2; h <= maxLag; h++) {
+                acf[h] = phi * acf[h-1];
+            }
+            
+            return acf;
+        }
+        
+        // Calcul approximatif de la PACF d'un ARMA(1,1)
+        function calculateARMA11PACF(phi, theta, maxLag) {
+            // Calculer d'abord l'ACF
+            const acf = calculateARMA11ACF(phi, theta, maxLag);
+            
+            // Utiliser l'algorithme de Durbin-Levinson pour calculer la PACF
+            const pacf = new Array(maxLag + 1);
+            pacf[0] = 1; // Pour h = 0
+            
+            // Variables temporaires pour les calculs intermédiaires
+            let phi_kj = new Array(maxLag + 1);
+            
+            // Pour h = 1
+            pacf[1] = acf[1]; // PACF(1) = ACF(1)
+            phi_kj[1] = acf[1];
+            
+            // Pour h >= 2
+            for (let k = 2; k <= maxLag; k++) {
+                let numerator = acf[k];
+                let temp_phi = new Array(k);
+                
+                for (let j = 1; j < k; j++) {
+                    numerator -= phi_kj[j] * acf[k-j];
+                    temp_phi[j] = phi_kj[j];
+                }
+                
+                let denominator = 1;
+                for (let j = 1; j < k; j++) {
+                    denominator -= phi_kj[j] * acf[j];
+                }
+                
+                pacf[k] = numerator / denominator;
+                phi_kj[k] = pacf[k];
+                
+                for (let j = 1; j < k; j++) {
+                    phi_kj[j] = temp_phi[j] - pacf[k] * temp_phi[k-j];
+                }
+            }
+            
+            return pacf;
+        }
+        
+        // Tracé de la région de stationnarité et d'inversibilité
+        function drawStationarityRegion() {
+            const canvas = document.getElementById('stationarity-plot');
+            const ctx = canvas.getContext('2d');
+            
+            // Effacer le canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Paramètres de dessin
+            const scale = 150; // Facteur d'échelle
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            // Tracer les axes
+            ctx.beginPath();
+            ctx.strokeStyle = 'black';
+            ctx.lineWidth = 1;
+            ctx.moveTo(0, centerY);
+            ctx.lineTo(canvas.width, centerY);
+            ctx.moveTo(centerX, 0);
+            ctx.lineTo(centerX, canvas.height);
+            ctx.stroke();
+            
+            // Étiquettes des axes
+            ctx.fillStyle = 'black';
+            ctx.font = '12px Arial';
+            ctx.fillText('φ', canvas.width - 15, centerY - 5);
+            ctx.fillText('θ', centerX + 5, 15);
+            
+            // Marquer les limites de stationnarité (|φ| < 1)
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(155, 89, 182, 0.8)';
+            ctx.lineWidth = 2;
+            ctx.moveTo(centerX - scale, centerY - scale);
+            ctx.lineTo(centerX - scale, centerY + scale);
+            ctx.moveTo(centerX + scale, centerY - scale);
+            ctx.lineTo(centerX + scale, centerY + scale);
+            ctx.stroke();
+            ctx.fillText('φ = -1', centerX - scale - 25, centerY);
+            ctx.fillText('φ = 1', centerX + scale + 5, centerY);
+            
+            // Marquer les limites d'inversibilité (|θ| < 1)
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(46, 204, 113, 0.8)';
+            ctx.lineWidth = 2;
+            ctx.moveTo(centerX - scale, centerY - scale);
+            ctx.lineTo(centerX + scale, centerY - scale);
+            ctx.moveTo(centerX - scale, centerY + scale);
+            ctx.lineTo(centerX + scale, centerY + scale);
+            ctx.stroke();
+            ctx.fillText('θ = -1', centerX, centerY + scale + 15);
+            ctx.fillText('θ = 1', centerX, centerY - scale - 5);
+            
+            // Remplir la région de stationnarité et d'inversibilité
+            ctx.beginPath();
+            ctx.rect(centerX - scale, centerY - scale, 2 * scale, 2 * scale);
+            ctx.fillStyle = 'rgba(155, 89, 182, 0.1)';
+            ctx.fill();
+            
+            // Tracer la diagonale θ = φ (cas d'annulation de racines)
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(231, 76, 60, 0.8)';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([5, 5]);
+            ctx.moveTo(centerX - scale, centerY - scale);
+            ctx.lineTo(centerX + scale, centerY + scale);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillText('θ = φ', centerX + scale/2, centerY + scale/2);
+            
+            // Marquer l'origine
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 3, 0, 2 * Math.PI);
+            ctx.fillStyle = 'black';
+            ctx.fill();
+            ctx.fillText('(0,0)', centerX + 5, centerY + 15);
+            
+            // Point actuel pour ACF
+            const phiACF = parseFloat(document.getElementById('phi-acf').value);
+            const thetaACF = parseFloat(document.getElementById('theta-acf').value);
+            
+            ctx.beginPath();
+            ctx.arc(centerX + phiACF * scale, centerY + thetaACF * scale, 5, 0, 2 * Math.PI);
+            ctx.fillStyle = 'rgba(142, 68, 173, 0.8)';
+            ctx.fill();
+            
+            // Point actuel pour PACF si différent
+            const phiPACF = parseFloat(document.getElementById('phi-pacf').value);
+            const thetaPACF = parseFloat(document.getElementById('theta-pacf').value);
+            
+            if (phiPACF !== phiACF || thetaPACF !== thetaACF) {
+                ctx.beginPath();
+                ctx.arc(centerX + phiPACF * scale, centerY + thetaPACF * scale, 5, 0, 2 * Math.PI);
+                ctx.fillStyle = 'rgba(46, 204, 113, 0.8)';
+                ctx.fill();
+            }
+        }
+        
+        // Graphique ACF
+        let acfChart;
+        function updateACF() {
+            const phi = parseFloat(document.getElementById('phi-acf').value);
+            const theta = parseFloat(document.getElementById('theta-acf').value);
+            
+            document.getElementById('phi-value-acf').textContent = phi.toFixed(2);
+            document.getElementById('theta-value-acf').textContent = theta.toFixed(2);
+            
+            const isStationary = checkStationary(phi);
+            const isInvertible = checkInvertible(theta);
+            
+            document.getElementById('stationarity-warning-acf').style.display = isStationary ? 'none' : 'block';
+            document.getElementById('invertibility-warning-acf').style.display = isInvertible ? 'none' : 'block';
+            
+            const lags = Array.from({length: 21}, (_, i) => i);
+            let acfValues;
+            
+            if (isStationary) {
+                acfValues = calculateARMA11ACF(phi, theta, 20);
+            } else {
+                acfValues = lags.map(h => h === 0 ? 1 : 0);
+            }
+            
+            if (acfChart) acfChart.destroy();
+            
+            acfChart = new Chart(
+                document.getElementById('acf-chart'),
+                {
+                    type: 'bar',
+                    data: {
+                        labels: lags,
+                        datasets: [{
+                            label: 'ACF',
+                            data: acfValues,
+                            backgroundColor: acfValues.map((v, i) => i === 0 ? 'rgba(142, 68, 173, 0.7)' : Math.abs(v) > 2/Math.sqrt(100) ? 'rgba(46, 204, 113, 0.7)' : 'rgba(142, 68, 173, 0.7)'),
+                            borderColor: 'rgba(142, 68, 173, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                min: -1,
+                                max: 1
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `Fonction d'Autocorrélation pour ARMA(1,1) avec φ = ${phi.toFixed(2)}, θ = ${theta.toFixed(2)}`
+                            }
+                        }
+                    }
+                }
+            );
+            
+            // Mettre à jour la région de stationnarité
+            drawStationarityRegion();
+        }
+        
+        // Graphique PACF
+        let pacfChart;
+        function updatePACF() {
+            const phi = parseFloat(document.getElementById('phi-pacf').value);
+            const theta = parseFloat(document.getElementById('theta-pacf').value);
+            
+            document.getElementById('phi-value-pacf').textContent = phi.toFixed(2);
+            document.getElementById('theta-value-pacf').textContent = theta.toFixed(2);
+            
+            const isStationary = checkStationary(phi);
+            const isInvertible = checkInvertible(theta);
+            
+            document.getElementById('stationarity-warning-pacf').style.display = isStationary ? 'none' : 'block';
+            document.getElementById('invertibility-warning-pacf').style.display = isInvertible ? 'none' : 'block';
+            
+            const lags = Array.from({length: 21}, (_, i) => i);
+            let pacfValues;
+            
+            if (isStationary) {
+                pacfValues = calculateARMA11PACF(phi, theta, 20);
+            } else {
+                pacfValues = lags.map(h => h === 0 ? 1 : 0);
+            }
+            
+            if (pacfChart) pacfChart.destroy();
+            
+            pacfChart = new Chart(
+                document.getElementById('pacf-chart'),
+                {
+                    type: 'bar',
+                    data: {
+                        labels: lags,
+                        datasets: [{
+                            label: 'PACF',
+                            data: pacfValues,
+                            backgroundColor: pacfValues.map((v, i) => i === 0 ? 'rgba(142, 68, 173, 0.7)' : Math.abs(v) > 2/Math.sqrt(100) ? 'rgba(46, 204, 113, 0.7)' : 'rgba(142, 68, 173, 0.7)'),
+                            borderColor: 'rgba(142, 68, 173, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                min: -1,
+                                max: 1
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `Fonction d'Autocorrélation Partielle pour ARMA(1,1) avec φ = ${phi.toFixed(2)}, θ = ${theta.toFixed(2)}`
+                            }
+                        }
+                    }
+                }
+            );
+            
+            // Mettre à jour la région de stationnarité
+            drawStationarityRegion();
+        }
+        
+        // Simulateur ARMA(1,1)
+        let simChart;
+        function simulateARMA11() {
+            const phi = parseFloat(document.getElementById('phi-sim').value);
+            const theta = parseFloat(document.getElementById('theta-sim').value);
+            const sigma = parseFloat(document.getElementById('sigma-sim').value);
+            const n = parseInt(document.getElementById('n-sim').value);
+            
+            checkSimParameters();
+            
+            // Générer les erreurs
+            const errors = new Array(n + 1);
+            for (let i = 0; i <= n; i++) {
+                errors[i] = sigma * randn();
+            }
+            
+            // Générer les données ARMA(1,1)
+            const data = new Array(n);
+            data[0] = errors[1]; // Initialisation
+            
+            for (let i = 1; i < n; i++) {
+                data[i] = phi * data[i-1] + errors[i+1] + theta * errors[i];
+            }
+            
+            // Calculer les statistiques empiriques
+            const mean = data.reduce((a, b) => a + b, 0) / n;
+            const variance = data.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / n;
+            
+            // Calculer l'autocorrélation empirique lag 1
+            let acf1 = 0;
+            for (let i = 0; i < n - 1; i++) {
+                acf1 += (data[i] - mean) * (data[i+1] - mean);
+            }
+            acf1 = acf1 / ((n-1) * variance);
+            
+            // Calculer les statistiques théoriques
+            const isStationary = checkStationary(phi);
+            
+            let theoreticalVariance, theoreticalACF1;
+            
+            if (isStationary) {
+                theoreticalVariance = sigma * sigma * (1 + 2 * phi * theta + theta * theta) / (1 - phi * phi);
+                theoreticalACF1 = (phi + theta) * (1 + phi * theta) / (1 + 2 * phi * theta + theta * theta);
+            } else {
+                theoreticalVariance = "Non définie (modèle non stationnaire)";
+                theoreticalACF1 = "Non définie";
+            }
+            
+            // Afficher les statistiques
+            document.getElementById('theoretical-mean').textContent = "0";
+            document.getElementById('theoretical-variance').textContent = isStationary ? theoreticalVariance.toFixed(4) : theoreticalVariance;
+            document.getElementById('theoretical-acf1').textContent = isStationary ? theoreticalACF1.toFixed(4) : theoreticalACF1;
+            
+            document.getElementById('empirical-mean').textContent = mean.toFixed(4);
+            document.getElementById('empirical-variance').textContent = variance.toFixed(4);
+            document.getElementById('empirical-acf1').textContent = acf1.toFixed(4);
+            
+            // Tracer la série temporelle
+            if (simChart) simChart.destroy();
+            
+            simChart = new Chart(
+                document.getElementById('simulation-chart'),
+                {
+                    type: 'line',
+                    data: {
+                        labels: Array.from({length: n}, (_, i) => i + 1),
+                        datasets: [{
+                            label: 'Série ARMA(1,1) simulée',
+                            data: data,
+                            borderColor: 'rgba(155, 89, 182, 1)',
+                            backgroundColor: 'rgba(155, 89, 182, 0.1)',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            fill: true,
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `Simulation ARMA(1,1) avec φ = ${phi.toFixed(2)}, θ = ${theta.toFixed(2)}, σ = ${sigma.toFixed(2)}`
+                            }
+                        },
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
+                        }
+                    }
+                }
+            );
+        }
+        
+        // Fonction pour générer des nombres aléatoires selon une loi normale
+        function randn() {
+            let u = 0, v = 0;
+            while (u === 0) u = Math.random();
+            while (v === 0) v = Math.random();
+            return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+        }
+        
+        // Initialiser les graphiques
+        document.addEventListener('DOMContentLoaded', function() {
+            drawStationarityRegion();
+            updateACF();
+            updatePACF();
+            simulateARMA11();
+            checkSimParameters();
+        });
+    </script>
+</body>
+</html>

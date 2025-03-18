@@ -3,844 +3,689 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Propriétés statistiques complètes du processus AR(1)</title>
-    <script type="text/javascript" async
-        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.js">
-    </script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&family=Playfair+Display:wght@700;900&family=Source+Sans+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Propriétés statistiques d'un processus AR(1)</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
         :root {
-            --primary-color: #1e3a8a;
-            --secondary-color: #f0f5ff;
-            --accent-color: #3b82f6;
-            --accent-light: #93c5fd;
-            --text-color: #1f2937;
-            --light-text: #6b7280;
-            --bg-color: #f9fafb;
-            --card-bg: #ffffff;
-            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --glow: 0 0 20px rgba(59, 130, 246, 0.5);
-            --border-radius: 12px;
-            --section-gap: 60px;
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
         }
         
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
         
         body {
-            font-family: 'Source Sans Pro', sans-serif;
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 40px 30px;
-            line-height: 1.8;
-            color: var(--text-color);
-            background-color: var(--bg-color);
-            background-image: radial-gradient(#e0e7ff 1px, transparent 1px);
-            background-size: 30px 30px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-color);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            min-height: 100vh;
         }
         
-        h1, h2, h3, h4 {
-            font-family: 'Playfair Display', serif;
-            color: var(--primary-color);
-            line-height: 1.3;
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            overflow: hidden;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--light-color);
+            padding-bottom: 20px;
         }
         
         h1 {
-            font-size: 3rem;
-            text-align: center;
-            margin: 20px 0 60px 0;
-            padding-bottom: 20px;
-            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            position: relative;
-            letter-spacing: -0.03em;
-        }
-        
-        h1::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 150px;
-            height: 5px;
-            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
-            border-radius: 5px;
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
         }
         
         h2 {
-            font-size: 2.2rem;
-            margin: 40px 0 30px 0;
-            color: var(--primary-color);
-            position: relative;
-            display: inline-block;
-        }
-        
-        h2::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 0;
-            width: 100px;
-            height: 4px;
-            background: var(--accent-color);
-            border-radius: 2px;
-        }
-        
-        h3 {
-            font-size: 1.6rem;
-            margin: 30px 0 20px 0;
-            color: var(--primary-color);
-        }
-        
-        h4 {
-            font-size: 1.2rem;
-            margin: 20px 0 15px 0;
-            color: var(--accent-color);
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 600;
-        }
-        
-        p, li {
-            font-size: 1.1rem;
-            margin-bottom: 15px;
-            line-height: 1.7;
-        }
-        
-        .header-section {
-            text-align: center;
-            margin-bottom: var(--section-gap);
-            padding: 30px;
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            border-top: 5px solid var(--accent-color);
-        }
-        
-        .header-section p {
-            font-size: 1.2rem;
-            max-width: 800px;
-            margin: 0 auto 20px auto;
-            color: var(--light-text);
-        }
-        
-        .main-section {
-            background-color: var(--card-bg);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            margin-bottom: var(--section-gap);
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .main-section:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow), var(--glow);
-        }
-        
-        .section-header {
-            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
-            color: white;
-            padding: 20px 30px;
-            position: relative;
-        }
-        
-        .section-header h2 {
-            color: white;
-            margin: 0;
+            color: var(--secondary-color);
             font-size: 1.8rem;
+            margin: 30px 0 15px;
+            padding-left: 10px;
+            border-left: 5px solid var(--secondary-color);
         }
         
-        .section-header h2::after {
-            display: none;
+        .equation-container {
+            background-color: var(--light-color);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            transition: transform 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
         }
         
-        .section-body {
-            padding: 30px;
+        .visible {
+            opacity: 1;
+            transform: translateY(0);
         }
         
-        .math-block {
-            background: var(--secondary-color);
-            padding: 25px;
-            border-radius: var(--border-radius);
-            margin: 25px 0;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            overflow-x: auto;
+        .step-explanation {
+            margin: 15px 0;
+        }
+        
+        .definition {
+            background-color: rgba(52, 152, 219, 0.1);
+            padding: 15px;
+            border-left: 4px solid var(--secondary-color);
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .final-result {
+            background-color: rgba(231, 76, 60, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid var(--accent-color);
+            font-weight: bold;
+        }
+        
+        .interactive-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input[type="range"], input[type="number"] {
+            width: 100%;
+        }
+        
+        button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: var(--primary-color);
+        }
+        
+        .property-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .property-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-title {
+            font-size: 1.3rem;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        
+        canvas {
+            width: 100%;
+            height: 300px;
+            margin: 20px 0;
+        }
+        
+        footer {
             text-align: center;
-            position: relative;
+            margin-top: 50px;
+            color: var(--dark-color);
+            opacity: 0.7;
+            font-size: 0.9rem;
         }
         
-        .math-block::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 5px;
-            height: 100%;
-            background: var(--accent-color);
-            border-radius: var(--border-radius) 0 0 var(--border-radius);
-        }
-        
-        ul {
-            padding-left: 25px;
+        .tabs {
+            display: flex;
             margin-bottom: 20px;
         }
         
-        li {
-            margin-bottom: 12px;
-            position: relative;
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #f1f1f1;
+            border: none;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
         }
         
-        li::before {
-            content: "•";
-            color: var(--accent-color);
-            font-weight: bold;
-            display: inline-block;
-            width: 1em;
-            margin-left: -1em;
-        }
-        
-        .step {
-            background: var(--secondary-color);
-            border-radius: var(--border-radius);
-            padding: 25px;
-            margin: 30px 0;
-            position: relative;
-            border-left: 5px solid var(--accent-color);
-        }
-        
-        .step-number {
-            position: absolute;
-            top: -15px;
-            left: 20px;
-            background: var(--accent-color);
+        .tab.active {
+            background-color: var(--secondary-color);
             color: white;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-family: 'Montserrat', sans-serif;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         
-        .important {
-            background-color: rgba(30, 58, 138, 0.05);
-            border-left: 5px solid var(--primary-color);
-            padding: 25px 30px;
-            margin: 30px 0;
-            border-radius: 0 var(--border-radius) var(--border-radius) 0;
-            position: relative;
+        .tab-content {
+            display: none;
         }
         
-        .important::before {
-            content: "Important";
-            position: absolute;
-            top: -12px;
-            left: 20px;
-            background: var(--primary-color);
-            color: white;
-            padding: 3px 15px;
-            border-radius: 15px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            font-family: 'Montserrat', sans-serif;
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
         }
         
-        .note {
-            background-color: rgba(251, 191, 36, 0.05);
-            border-left: 5px solid #fbbf24;
-            padding: 25px 30px;
-            margin: 30px 0;
-            border-radius: 0 var(--border-radius) var(--border-radius) 0;
-            position: relative;
-        }
-        
-        .note::before {
-            content: "Note";
-            position: absolute;
-            top: -12px;
-            left: 20px;
-            background: #fbbf24;
-            color: white;
-            padding: 3px 15px;
-            border-radius: 15px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            font-family: 'Montserrat', sans-serif;
-        }
-        
-        .conclusion {
-            background-color: rgba(5, 150, 105, 0.05);
-            border-left: 5px solid #059669;
-            padding: 25px 30px;
-            margin: 30px 0;
-            border-radius: 0 var(--border-radius) var(--border-radius) 0;
-            position: relative;
-        }
-        
-        .conclusion::before {
-            content: "Conclusion";
-            position: absolute;
-            top: -12px;
-            left: 20px;
-            background: #059669;
-            color: white;
-            padding: 3px 15px;
-            border-radius: 15px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            font-family: 'Montserrat', sans-serif;
-        }
-        
-        .highlight {
-            background-color: rgba(59, 130, 246, 0.1);
-            padding: 0 5px;
-            border-radius: 3px;
-            color: var(--accent-color);
-            font-weight: 600;
-        }
-        
-        .formula-result {
-            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
-            color: white;
-            padding: 15px 30px;
-            border-radius: var(--border-radius);
-            margin: 30px 0;
-            text-align: center;
-            box-shadow: var(--shadow);
-        }
-        
-        .formula-result p {
-            margin: 0;
-            font-weight: 600;
-            font-size: 1.15rem;
-        }
-        
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin: 40px 0;
-        }
-        
-        .grid-item {
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            padding: 20px;
-            box-shadow: var(--shadow);
-            border-top: 3px solid var(--accent-color);
-        }
-        
-        .grid-item h4 {
-            margin-top: 0;
-        }
-        
-        .legend-panel {
-            position: relative;
-            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
-            color: white;
-            padding: 30px;
-            border-radius: var(--border-radius);
-            margin: 50px 0;
-            box-shadow: var(--shadow);
-            overflow: hidden;
-        }
-        
-        .legend-panel::before {
-            content: "";
-            position: absolute;
-            top: -50px;
-            left: -50px;
-            width: 200px;
-            height: 200px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-        }
-        
-        .legend-panel::after {
-            content: "";
-            position: absolute;
-            bottom: -80px;
-            right: -80px;
-            width: 300px;
-            height: 300px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 50%;
-        }
-        
-        .legend-panel h3 {
-            color: white;
-            margin-top: 0;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .legend-panel p {
-            position: relative;
-            z-index: 1;
-        }
-        
-        @media (max-width: 768px) {
-            body {
-                padding: 20px 15px;
-            }
-            
-            h1 {
-                font-size: 2.2rem;
-            }
-            
-            h2 {
-                font-size: 1.8rem;
-            }
-            
-            h3 {
-                font-size: 1.4rem;
-            }
-            
-            .math-block {
-                padding: 15px;
-            }
-            
-            .grid-container {
-                grid-template-columns: 1fr;
-            }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
     </style>
 </head>
 <body>
-
-    <div class="header-section">
-        <h1>Propriétés statistiques du processus AR(1)</h1>
-        <p>Démonstrations complètes de l'espérance, de la variance, de l'autocovariance et de l'autocorrélation</p>
-    </div>
-
-    <div class="main-section">
-        <div class="section-header">
-            <h2>1. Définition du processus AR(1)</h2>
-        </div>
-        <div class="section-body">
-            <p>Le processus autorégressif d'ordre 1, noté \(AR(1)\), est défini par l'équation de récurrence suivante :</p>
-
-            <div class="math-block">
-            \[
-                X_t = \phi X_{t-1} + \epsilon_t, \quad t \in \mathbb{Z}
-            \]
-            </div>
-
-            <p>où :</p>
-            <ul>
-                <li>\(\phi\) est un paramètre réel tel que \(|\phi| < 1\) pour assurer la stationnarité du processus.</li>
-                <li>\((\epsilon_t)_{t\in \mathbb{Z}}\) est un bruit blanc centré, c'est-à-dire :</li>
-            </ul>
-
-            <div class="math-block">
-            \[
-                \mathbb{E}[\epsilon_t] = 0, \quad \text{et} \quad \text{Var}(\epsilon_t) = \sigma^2_\epsilon.
-            \]
-            </div>
-
-            <div class="note">
-                <p>La condition \(|\phi| < 1\) est nécessaire et suffisante pour garantir que le processus soit stationnaire au second ordre.</p>
-            </div>
-            
-            <p>Le processus AR(1) peut également être défini avec une constante :</p>
-            
-            <div class="math-block">
-            \[
-                X_t = \mu_0 + \phi X_{t-1} + \epsilon_t, \quad t \in \mathbb{Z}
-            \]
-            </div>
-        </div>
-    </div>
-
-    <div class="main-section">
-        <div class="section-header">
-            <h2>2. Démonstration de l'espérance</h2>
-        </div>
-        <div class="section-body">
-            <h3>2.1 Cas sans constante</h3>
-
-            <div class="step">
-                <div class="step-number">1</div>
-                <h4>Application de l'opérateur d'espérance</h4>
-                <p>Prenons l'espérance mathématique des deux côtés de l'équation définissant le processus \(AR(1)\) :</p>
-                <div class="math-block">
-                \[
-                    \mathbb{E}[X_t] = \mathbb{E}[\phi X_{t-1} + \epsilon_t]
-                \]
-                </div>
-            </div>
-
-            <div class="step">
-                <div class="step-number">2</div>
-                <h4>Utilisation de la linéarité de l'espérance</h4>
-                <p>Par la propriété de linéarité de l'espérance mathématique :</p>
-                <div class="math-block">
-                \[
-                    \mathbb{E}[X_t] = \phi \mathbb{E}[X_{t-1}] + \mathbb{E}[\epsilon_t]
-                \]
-                </div>
-            </div>
-
-            <div class="step">
-                <div class="step-number">3</div>
-                <h4>Simplification avec les hypothèses</h4>
-                <p>D'après nos hypothèses, le bruit blanc est centré, donc \(\mathbb{E}[\epsilon_t] = 0\). L'équation se simplifie alors en :</p>
-                <div class="math-block">
-                \[
-                    \mathbb{E}[X_t] = \phi \mathbb{E}[X_{t-1}]
-                \]
-                </div>
-            </div>
-
-            <div class="step">
-                <div class="step-number">4</div>
-                <h4>Utilisation de la stationnarité</h4>
-                <p>Si le processus est stationnaire (ce qui est le cas si \(|\phi| < 1\)), alors l'espérance ne dépend pas du temps. Donc :</p>
-                <div class="math-block">
-                \[
-                    \mathbb{E}[X_t] = \mathbb{E}[X_{t-1}] = \mu
-                \]
-                </div>
-                <p>où \(\mu\) est une constante indépendante de \(t\).</p>
-            </div>
-
-            <div class="step">
-                <div class="step-number">5</div>
-                <h4>Résolution de l'équation</h4>
-                <p>En substituant cette relation dans l'équation précédente :</p>
-                <div class="math-block">
-                \[
-                    \mu = \phi \mu \Rightarrow \mu (1 - \phi) = 0
-                \]
-                </div>
-                <p>Puisque \(|\phi| < 1\), nous avons \(1 - \phi \neq 0\), ce qui implique nécessairement :</p>
-                <div class="math-block">
-                \[
-                    \mu = 0
-                \]
-                </div>
-            </div>
-
-            <div class="formula-result">
-                <p>Pour un processus AR(1) stationnaire sans constante: \(\mathbb{E}[X_t] = 0\)</p>
-            </div>
-
-            <h3>2.2 Cas avec constante</h3>
-
-            <div class="step">
-                <div class="step-number">1</div>
-                <h4>Application de l'opérateur d'espérance</h4>
-                <p>Pour le modèle avec constante \(X_t = \mu_0 + \phi X_{t-1} + \epsilon_t\), en prenant l'espérance :</p>
-                <div class="math-block">
-                \[
-                    \mathbb{E}[X_t] = \mathbb{E}[\mu_0 + \phi X_{t-1} + \epsilon_t]
-                \]
-                </div>
-            </div>
-
-            <div class="step">
-                <div class="step-number">2</div>
-                <h4>Utilisation de la linéarité et des hypothèses</h4>
-                <p>Par linéarité et avec \(\mathbb{E}[\epsilon_t] = 0\) :</p>
-                <div class="math-block">
-                \[
-                    \mathbb{E}[X_t] = \mu_0 + \phi \mathbb{E}[X_{t-1}]
-                \]
-                </div>
-            </div>
-
-            <div class="step">
-                <div class="step-number">3</div>
-                <h4>Utilisation de la stationnarité et résolution</h4>
-                <p>Sous stationnarité, \(\mathbb{E}[X_t] = \mathbb{E}[X_{t-1}] = \mu\), donc :</p>
-                <div class="math-block">
-                \begin{align}
-                    \mu &= \mu_0 + \phi \mu\\
-                    \mu - \phi \mu &= \mu_0\\
-                    \mu(1 - \phi) &= \mu_0
-                \end{align}
-                </div>
-                <p>Si \(|\phi| < 1\), alors \(1 - \phi \neq 0\) et :</p>
-                <div class="math-block">
-                \[
-                    \mu = \frac{\mu_0}{1 - \phi}
-                \]
-                </div>
-            </div>
-
-            <div class="formula-result">
-                <p>Pour un processus AR(1) stationnaire avec constante: \(\mathbb{E}[X_t] = \frac{\mu_0}{1 - \phi}\)</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="main-section">
-        <div class="section-header">
-            <h2>3. Démonstration de la variance</h2>
-        </div>
-        <div class="section-body">
-            <p>Pour un processus AR(1) stationnaire, la variance est constante dans le temps. Calculons \(\text{Var}(X_t)\) pour le modèle sans constante (les résultats sont identiques pour le modèle avec constante).</p>
-
-            <div class="step">
-                <div class="step-number">1</div>
-                <h4>Écriture de la variance</h4>
-                <p>Pour le processus \(X_t = \phi X_{t-1} + \epsilon_t\), appliquons l'opérateur de variance :</p>
-                <div class="math-block">
-                \[
-                    \text{Var}(X_t) = \text{Var}(\phi X_{t-1} + \epsilon_t)
-                \]
-                </div>
-            </div>
-
-            <div class="step">
-                <div class="step-number">2</div>
-                <h4>Propriétés de la variance</h4>
-                <p>En utilisant les propriétés de la variance et l'indépendance entre \(X_{t-1}\) et \(\epsilon_t\) :</p>
-                <div class="math-block">
-                \begin{align}
-                    \text{Var}(X_t) &= \text{Var}(\phi X_{t-1}) + \text{Var}(\epsilon_t)\\
-                    &= \phi^2 \text{Var}(X_{t-1}) + \sigma^2_\epsilon
-                \end{align}
-                </div>
-            </div>
-
-            <div class="step">
-                <div class="step-number">3</div>
-                <h4>Utilisation de la stationnarité</h4>
-                <p>Par stationnarité, \(\text{Var}(X_t) = \text{Var}(X_{t-1}) = \gamma_0\) (où \(\gamma_0\) désigne la variance du processus). Nous avons donc :</p>
-                <div class="math-block">
-                \begin{align}
-                    \gamma_0 &= \phi^2 \gamma_0 + \sigma^2_\epsilon\\
-                    \gamma_0 - \phi^2 \gamma_0 &= \sigma^2_\epsilon\\
-                    \gamma_0(1 - \phi^2) &= \sigma^2_\epsilon
-                \end{align}
-                </div>
-            </div>
-
-            <div class="step">
-                <div class="step-number">4</div>
-                <h4>Résolution de l'équation</h4>
-                <p>Si \(|\phi| < 1\), alors \(1 - \phi^2 > 0\) et nous pouvons résoudre pour \(\gamma_0\) :</p>
-                <div class="math-block">
-                \[
-                    \gamma_0 = \frac{\sigma^2_\epsilon}{1 - \phi^2}
-                \]
-                </div>
-            </div>
-
-            <div class="formula-result">
-                <p>Variance du processus AR(1) stationnaire: \(\text{Var}(X_t) = \frac{\sigma^2_\epsilon}{1 - \phi^2}\)</p>
-            </div>
-
-            <div class="important">
-                <p>La variance du processus AR(1) est toujours supérieure à la variance du bruit blanc \(\sigma^2_\epsilon\) lorsque \(\phi \neq 0\). Plus \(|\phi|\) est proche de 1, plus la variance du processus est grande, ce qui reflète l'accumulation des effets du bruit à travers le temps.</p>
-            </div>
-
-            <h3>Propriétés notables de la variance</h3>
-            <ul>
-                <li>Si \(\phi = 0\), alors \(\text{Var}(X_t) = \sigma^2_\epsilon\), ce qui correspond à un bruit blanc.</li>
-                <li>Si \(\phi\) s'approche de \(\pm 1\), la variance tend vers l'infini, ce qui souligne l'importance de la condition de stationnarité \(|\phi| < 1\).</li>
-                <li>Pour \(\phi > 0\), le processus présente une persistance positive (valeurs successives de même signe).</li>
-                <li>Pour \(\phi < 0\), le processus présente une persistance négative (alternance de signes entre valeurs successives).</li>
-            </ul>
-        </div>
-    </div>
-
-    <div class="main-section">
-        <div class="section-header">
-            <h2>4. Démonstration de l'autocovariance</h2>
-        </div>
-        <div class="section-body">
-            <p>L'autocovariance d'un processus \(AR(1)\) stationnaire pour un décalage \(h\) est définie par :</p>
-            <div class="math-block">
-            \[
-                \gamma_h = \text{Cov}(X_t, X_{t+h}) = \mathbb{E}[(X_t - \mathbb{E}[X_t])(X_{t+h} - \mathbb{E}[X_{t+h}])]
-            \]
-            </div>
-
-            <p>Pour un processus sans constante, \(\mathbb{E}[X_t] = 0\), donc \(\gamma_h = \mathbb{E}[X_t X_{t+h}]\).</p>
-
-            <div class="step">
-                <div class="step-number">1</div>
-                <h4>Calcul de \(\gamma_1\) (décalage de 1)</h4>
-                <p>Commençons par l'autocovariance avec un décalage de 1 :</p>
-                <div class="math-block">
-                \begin{align}
-                    \gamma_1 &= \mathbb{E}[X_t X_{t+1}]\\
-                    &= \mathbb{E}[X_t (\phi X_t + \epsilon_{t+1})]\\
-                    &= \phi \mathbb{E}[X_t^2] + \mathbb{E}[X_t \epsilon_{t+1}]
-                \end{align}
-                </div>
-                <p>Comme \(X_t\) et \(\epsilon_{t+1}\) sont indépendants, \(\mathbb{E}[X_t \epsilon_{t+1}] = \mathbb{E}[X_t] \mathbb{E}[\epsilon_{t+1}] = 0\).</p>
-                <p>De plus, \(\mathbb{E}[X_t^2] = \text{Var}(X_t) = \gamma_0\) car \(\mathbb{E}[X_t] = 0\).</p>
-                <div class="math-block">
-                \[
-                    \gamma_1 = \phi \gamma_0 = \phi \frac{\sigma^2_\epsilon}{1 - \phi^2} = \frac{\phi \sigma^2_\epsilon}{1 - \phi^2}
-                \]
-                </div>
-            </div>
-
-            <div class="step">
-                <div class="step-number">2</div>
-                <h4>Calcul de \(\gamma_2\) (décalage de 2)</h4>
-                <div class="math-block">
-                \begin{align}
-                    \gamma_2 &= \mathbb{E}[X_t X_{t+2}]\\
-                    &= \mathbb{E}[X_t (\phi X_{t+1} + \epsilon_{t+2})]\\
-                    &= \phi \mathbb{E}[X_t X_{t+1}] + \mathbb{E}[X_t \epsilon_{t+2}]
-                \end{align}
-                </div>
-                <p>Comme \(X_t\) et \(\epsilon_{t+2}\) sont indépendants, \(\mathbb{E}[X_t \epsilon_{t+2}] = 0\).</p>
-                <p>En substituant \(\gamma_1 = \phi \gamma_0\), nous obtenons :</p>
-                <div class="math-block">
-                \[
-                    \gamma_2 = \phi \gamma_1 = \phi^2 \gamma_0 = \frac{\phi^2 \sigma^2_\epsilon}{1 - \phi^2}
-                \]
-                </div>
-            </div>
-
-            <div class="step">
-                <div class="step-number">3</div>
-                <h4>Généralisation pour un décalage \(h\)</h4>
-                <p>En poursuivant ce raisonnement de manière récursive, nous pouvons montrer que :</p>
-                <div class="math-block">
-                \[
-                    \gamma_h = \phi^h \gamma_0 = \frac{\phi^h \sigma^2_\epsilon}{1 - \phi^2}
-                \]
-                </div>
-                <p>Cette formule est valable pour tout \(h \geq 0\).</p>
-            </div>
-
-            <div class="step">
-                <div class="step-number">4</div>
-                <h4>Autocovariance pour \(h < 0\)</h4>
-                <p>Par symétrie de l'autocovariance (propriété des processus stationnaires), nous avons :</p>
-                <div class="math-block">
-                \[
-                    \gamma_h = \gamma_{-h} \quad \text{pour tout } h
-                \]
-                </div>
-                <p>Donc pour tout entier \(h\), l'autocovariance est :</p>
-                <div class="math-block">
-                \[
-                    \gamma_h = \frac{\phi^{|h|} \sigma^2_\epsilon}{1 - \phi^2}
-                \]
-                </div>
-            </div>
-
-            <div class="formula-result">
-                <p>Autocovariance du processus AR(1) stationnaire: \(\gamma_h = \frac{\phi^{|h|} \sigma^2_\epsilon}{1 - \phi^2}\)</p>
-            </div>
-
-            <div class="note">
-                <p>L'autocovariance du processus AR(1) décroît exponentiellement avec le décalage \(h\) au taux \(|\phi|\). Cette propriété caractérise la "mémoire" du processus : plus \(|\phi|\) est proche de 1, plus la dépendance entre des observations éloignées reste forte.</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="main-section">
-        <div class="section-header">
-            <h2>5. Démonstration de l'autocorrélation</h2>
-        </div>
-        <div class="section-body">
-            <p>L'autocorrélation \(\rho_h\) d'un processus stationnaire est définie comme l'autocovariance normalisée :</p>
-            <div class="math-block">
-            \[
-                \rho_h = \frac{\gamma_h}{\gamma_0} = \frac{\text{Cov}(X_t, X_{t+h})}{\sqrt{\text{Var}(X_t) \text{Var}(X_{t+h})}} = \frac{\text{Cov}(X_t, X_{t+h})}{\text{Var}(X_t)}
-            \]
-            </div>
-
-            <div class="step">
-                <div class="step-number">1</div>
-                <h4>Utilisation de l'autocovariance</h4>
-                <p>À partir de notre formule d'autocovariance et de variance :</p>
-                <div class="math-block">
-                \begin{align}
-                    \rho_h &= \frac{\gamma_h}{\gamma_0}\\
-                    &= \frac{\phi^{|h|} \sigma^2_\epsilon/(1-\phi^2)}{\sigma^2_\epsilon/(1-\phi^2)}\\
-                    &= \phi^{|h|}
-                \end{align}
-                </div>
-            </div>
-
-            <div class="formula-result">
-                <p>Autocorrélation du processus AR(1) stationnaire: \(\rho_h = \phi^{|h|}\)</p>
-            </div>
-
-            <div class="important">
-                <p>L'autocorrélation du processus AR(1) a une forme particulièrement simple : elle décroît exponentiellement avec le décalage \(h\) et dépend uniquement du paramètre autorégressif \(\phi\).</p>
-            </div>
-
-            <h3>Propriétés de l'autocorrélation du processus AR(1)</h3>
-            <ul>
-                <li>Pour \(\phi > 0\), l'autocorrélation est toujours positive et décroît lentement (processus à mémoire longue pour \(\phi\) proche de 1).</li>
-                <li>Pour \(\phi < 0\), l'autocorrélation alterne de signe avec le décalage \(h\), ce qui indique une tendance à l'oscillation du processus.</li>
-                <li>Pour \(\phi = 0\), l'autocorrélation est nulle pour tout \(h \neq 0\), ce qui correspond à un bruit blanc.</li>
-                <li>L'autocorrélation ne dépend pas de la variance du bruit \(\sigma^2_\epsilon\), ce qui reflète sa nature de mesure normalisée.</li>
-            </ul>
-
-            <h3>La fonction d'autocorrélation (ACF)</h3>
-            <p>La fonction d'autocorrélation (ACF) est un outil graphique fondamental pour identifier un processus AR(1) dans les données empiriques. Pour un AR(1), cette fonction :</p>
-            
-            <div class="grid-container">
-                <div class="grid-item">
-                    <h4>Pour \(\phi > 0\)</h4>
-                    <p>Décroît exponentiellement sans changer de signe.</p>
-                    <p>Exemple: Si \(\phi = 0.7\), alors \(\rho_1 = 0.7\), \(\rho_2 = 0.49\), \(\rho_3 = 0.343\), etc.</p>
-                </div>
-                <div class="grid-item">
-                    <h4>Pour \(\phi < 0\)</h4>
-                    <p>Alterne de signe avec une amplitude décroissante.</p>
-                    <p>Exemple: Si \(\phi = -0.7\), alors \(\rho_1 = -0.7\), \(\rho_2 = 0.49\), \(\rho_3 = -0.343\), etc.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="legend-panel">
-        <h3>Synthèse des propriétés statistiques du processus AR(1)</h3>
-        <p>Le processus AR(1) stationnaire avec \(X_t = \phi X_{t-1} + \epsilon_t\) où \(|\phi| < 1\) et \(\epsilon_t \sim WN(0, \sigma^2_\epsilon)\) possède les propriétés suivantes :</p>
+    <div class="container">
+        <header class="animate__animated animate__fadeInDown">
+            <h1>Processus Autorégressif d'Ordre 1</h1>
+            <p>Analyse détaillée des propriétés statistiques d'un AR(1)</p>
+        </header>
         
-        <div class="grid-container">
-            <div class="grid-item" style="background: rgba(255, 255, 255, 0.1);">
-                <h4>Espérance</h4>
-                <p>Sans constante: \(\mathbb{E}[X_t] = 0\)</p>
-                <p>Avec constante \(\mu_0\): \(\mathbb{E}[X_t] = \frac{\mu_0}{1-\phi}\)</p>
+        <div class="definition animate__animated animate__fadeIn">
+            <p>Un processus AR(1) est défini par l'équation :
+            \[X_t = \phi X_{t-1} + \varepsilon_t\]
+            où \(\varepsilon_t \sim \text{WN}(0, \sigma^2_{\varepsilon})\) est un bruit blanc de moyenne nulle et de variance \(\sigma^2_{\varepsilon}\).</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="openTab(event, 'mean')">Moyenne</button>
+            <button class="tab" onclick="openTab(event, 'variance')">Variance</button>
+            <button class="tab" onclick="openTab(event, 'autocovariance')">Autocovariance</button>
+            <button class="tab" onclick="openTab(event, 'autocorrelation')">Autocorrélation</button>
+            <button class="tab" onclick="openTab(event, 'pacf')">PACF</button>
+            <button class="tab" onclick="openTab(event, 'simulator')">Simulateur</button>
+        </div>
+        
+        <div id="mean" class="tab-content active">
+            <h2>Calcul de la Moyenne</h2>
+            
+            <div class="equation-container">
+                <p>Prenons l'espérance de \(X_t\) :</p>
+                \[E[X_t] = E[\phi X_{t-1} + \varepsilon_t] = \phi E[X_{t-1}] + E[\varepsilon_t]\]
             </div>
-            <div class="grid-item" style="background: rgba(255, 255, 255, 0.1);">
-                <h4>Variance</h4>
-                <p>\(\text{Var}(X_t) = \frac{\sigma^2_\epsilon}{1-\phi^2}\)</p>
+            
+            <div class="step-explanation">
+                <p>Comme \(E[\varepsilon_t] = 0\) et en supposant que le processus est stationnaire (c'est-à-dire \(E[X_t] = E[X_{t-1}] = \mu\)), nous obtenons :</p>
             </div>
-            <div class="grid-item" style="background: rgba(255, 255, 255, 0.1);">
-                <h4>Autocovariance</h4>
-                <p>\(\gamma_h = \frac{\phi^{|h|}\sigma^2_\epsilon}{1-\phi^2}\)</p>
+            
+            <div class="equation-container">
+                \[\mu = \phi \mu + 0\]
+                \[\mu(1 - \phi) = 0\]
             </div>
-            <div class="grid-item" style="background: rgba(255, 255, 255, 0.1);">
-                <h4>Autocorrélation</h4>
-                <p>\(\rho_h = \phi^{|h|}\)</p>
+            
+            <div class="step-explanation">
+                <p>Si \(\phi \neq 1\) (condition de stationnarité), alors :</p>
+            </div>
+            
+            <div class="final-result">
+                \[\mu = E[X_t] = 0 \quad \text{pour} \quad |\phi| < 1\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Si \(\phi = 1\), le processus est non stationnaire (marche aléatoire) et la moyenne n'est pas définie.</p>
             </div>
         </div>
+        
+        <div id="variance" class="tab-content">
+            <h2>Calcul de la Variance</h2>
+            
+            <div class="equation-container">
+                <p>Pour un processus stationnaire, la variance est constante :</p>
+                \[\text{Var}(X_t) = \text{Var}(X_{t-1}) = \gamma(0)\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Calculons la variance de \(X_t\) :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\begin{align*}
+                \text{Var}(X_t) &= \text{Var}(\phi X_{t-1} + \varepsilon_t) \\
+                &= \phi^2 \text{Var}(X_{t-1}) + \text{Var}(\varepsilon_t) + 2\phi \text{Cov}(X_{t-1}, \varepsilon_t)
+                \end{align*}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Comme \(\varepsilon_t\) est indépendant de \(X_{t-1}\), \(\text{Cov}(X_{t-1}, \varepsilon_t) = 0\), et :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\gamma(0) = \phi^2 \gamma(0) + \sigma^2_{\varepsilon}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Résolvons pour \(\gamma(0)\) :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\gamma(0)(1 - \phi^2) = \sigma^2_{\varepsilon}\]
+            </div>
+            
+            <div class="final-result">
+                \[\gamma(0) = \frac{\sigma^2_{\varepsilon}}{1 - \phi^2} \quad \text{pour} \quad |\phi| < 1\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Cette variance existe seulement si \(|\phi| < 1\) (condition de stationnarité).</p>
+            </div>
+        </div>
+        
+        <div id="autocovariance" class="tab-content">
+            <h2>Calcul de l'Autocovariance</h2>
+            
+            <div class="equation-container">
+                <p>L'autocovariance à un décalage \(h\) est définie par :</p>
+                \[\gamma(h) = \text{Cov}(X_t, X_{t+h})\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Pour \(h = 1\) :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\begin{align*}
+                \gamma(1) &= \text{Cov}(X_t, X_{t+1}) \\
+                &= \text{Cov}(X_t, \phi X_t + \varepsilon_{t+1}) \\
+                &= \phi \text{Cov}(X_t, X_t) + \text{Cov}(X_t, \varepsilon_{t+1})
+                \end{align*}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Comme \(\varepsilon_{t+1}\) est indépendant de \(X_t\), \(\text{Cov}(X_t, \varepsilon_{t+1}) = 0\), donc :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\gamma(1) = \phi \gamma(0) = \phi \frac{\sigma^2_{\varepsilon}}{1 - \phi^2}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Par récurrence, pour tout \(h \geq 1\) :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\gamma(h) = \phi^h \gamma(0) = \phi^h \frac{\sigma^2_{\varepsilon}}{1 - \phi^2}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>De plus, comme l'autocovariance est une fonction paire, pour \(h < 0\) :</p>
+            </div>
+            
+            <div class="final-result">
+                \[\gamma(h) = \phi^{|h|} \frac{\sigma^2_{\varepsilon}}{1 - \phi^2} \quad \text{pour} \quad h \in \mathbb{Z}\]
+            </div>
+        </div>
+        
+        <div id="autocorrelation" class="tab-content">
+            <h2>Calcul de l'Autocorrélation (ACF)</h2>
+            
+            <div class="equation-container">
+                <p>L'autocorrélation à un décalage \(h\) est définie par :</p>
+                \[\rho(h) = \frac{\gamma(h)}{\gamma(0)}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>En utilisant les résultats précédents :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\rho(h) = \frac{\phi^{|h|} \frac{\sigma^2_{\varepsilon}}{1 - \phi^2}}{\frac{\sigma^2_{\varepsilon}}{1 - \phi^2}} = \phi^{|h|}\]
+            </div>
+            
+            <div class="final-result">
+                \[\rho(h) = \phi^{|h|} \quad \text{pour} \quad h \in \mathbb{Z}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>L'ACF d'un processus AR(1) décroît de façon exponentielle à un taux \(|\phi|\).</p>
+            </div>
+            
+            <div class="interactive-section">
+                <h3>Visualisation de l'autocorrélation</h3>
+                <div class="form-group">
+                    <label for="phi-acf">Coefficient φ : <span id="phi-value-acf">0.7</span></label>
+                    <input type="range" id="phi-acf" min="-0.99" max="0.99" step="0.01" value="0.7" oninput="updateACF()">
+                </div>
+                <canvas id="acf-chart"></canvas>
+            </div>
+        </div>
+        
+        <div id="pacf" class="tab-content">
+            <h2>Calcul de l'Autocorrélation Partielle (PACF)</h2>
+            
+            <div class="equation-container">
+                <p>Pour un processus AR(1), la fonction d'autocorrélation partielle (PACF) prend les valeurs suivantes :</p>
+            </div>
+            
+            <div class="step-explanation">
+                <p>\(\phi_{11} = \rho(1) = \phi\) (pour le décalage 1)</p>
+                <p>\(\phi_{hh} = 0\) pour \(h > 1\)</p>
+            </div>
+            
+            <div class="final-result">
+                \[\phi_{hh} = 
+                \begin{cases}
+                \phi & \text{pour } h = 1 \\
+                0 & \text{pour } h > 1
+                \end{cases}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Cela signifie que l'autocorrélation partielle est significative uniquement au premier décalage (caractéristique d'un processus AR(1)) et nulle pour tous les autres décalages.</p>
+            </div>
+            
+            <div class="interactive-section">
+                <h3>Visualisation de l'autocorrélation partielle</h3>
+                <div class="form-group">
+                    <label for="phi-pacf">Coefficient φ : <span id="phi-value-pacf">0.7</span></label>
+                    <input type="range" id="phi-pacf" min="-0.99" max="0.99" step="0.01" value="0.7" oninput="updatePACF()">
+                </div>
+                <canvas id="pacf-chart"></canvas>
+            </div>
+        </div>
+        
+        <div id="simulator" class="tab-content">
+            <h2>Simulateur de Processus AR(1)</h2>
+            
+            <div class="interactive-section">
+                <h3>Paramètres du modèle</h3>
+                <div class="form-group">
+                    <label for="phi-sim">Coefficient φ :</label>
+                    <input type="range" id="phi-sim" min="-0.99" max="0.99" step="0.01" value="0.7" oninput="document.getElementById('phi-value-sim').textContent = this.value">
+                    <span id="phi-value-sim">0.7</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="sigma-sim">Écart-type du bruit σ :</label>
+                    <input type="range" id="sigma-sim" min="0.1" max="5" step="0.1" value="1" oninput="document.getElementById('sigma-value-sim').textContent = this.value">
+                    <span id="sigma-value-sim">1</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="n-sim">Nombre d'observations :</label>
+                    <input type="range" id="n-sim" min="50" max="500" step="10" value="200" oninput="document.getElementById('n-value-sim').textContent = this.value">
+                    <span id="n-value-sim">200</span>
+                </div>
+                
+                <button onclick="simulateAR1()">Simuler le processus</button>
+                
+                <canvas id="simulation-chart"></canvas>
+                
+                <div id="properties-container">
+                    <h3>Propriétés du processus simulé</h3>
+                    <div class="property-card">
+                        <div class="card-title">Moyenne théorique</div>
+                        <div id="theoretical-mean">0</div>
+                    </div>
+                    <div class="property-card">
+                        <div class="card-title">Variance théorique</div>
+                        <div id="theoretical-variance"></div>
+                    </div>
+                    <div class="property-card">
+                        <div class="card-title">Moyenne empirique</div>
+                        <div id="empirical-mean"></div>
+                    </div>
+                    <div class="property-card">
+                        <div class="card-title">Variance empirique</div>
+                        <div id="empirical-variance"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="interactive-section">
+            <h2>Résumé des propriétés statistiques de l'AR(1)</h2>
+            <div class="final-result">
+                \[\begin{align*}
+                \text{Moyenne: } & \mu = 0 \\
+                \text{Variance: } & \gamma(0) = \frac{\sigma^2_{\varepsilon}}{1-\phi^2} \\
+                \text{Autocovariance: } & \gamma(h) = \phi^{|h|}\frac{\sigma^2_{\varepsilon}}{1-\phi^2} \\
+                \text{Autocorrélation: } & \rho(h) = \phi^{|h|} \\
+                \text{Autocorrélation partielle: } & \phi_{hh} = 
+                \begin{cases}
+                \phi & \text{pour } h = 1 \\
+                0 & \text{pour } h > 1
+                \end{cases}
+                \end{align*}\]
+            </div>
+            <p>Toutes ces propriétés sont valables sous la condition de stationnarité \(|\phi| < 1\).</p>
+        </div>
+        
+        <footer>
+            <p>© 2023 Analyse des Séries Temporelles | Calculateur de Propriétés AR(1)</p>
+        </footer>
     </div>
 
-    <div class="conclusion">
-        <h3>Conclusion</h3>
-        <p>Les démonstrations présentées établissent les propriétés statistiques fondamentales du processus AR(1). Ces propriétés sont essentielles pour :</p>
-        <ul>
-            <li>Comprendre le comportement des séries temporelles modélisées par un processus AR(1)</li>
-            <li>Identifier la présence d'un tel processus dans des données empiriques</li>
-            <li>Estimer les paramètres du modèle à partir des statistiques observées</li>
-            <li>Effectuer des prévisions optimales basées sur les observations passées</li>
-        </ul>
-        <p>La simplicité relative du processus AR(1) en fait un modèle de référence dans l'analyse des séries temporelles, tout en capturant des phénomènes dynamiques importants comme la persistance et la dépendance temporelle.</p>
-    </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Observer pour animer les équations au scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        document.querySelectorAll('.equation-container').forEach(eq => {
+            observer.observe(eq);
+        });
+        
+        // Gestion des onglets
+        function openTab(evt, tabName) {
+            const tabContents = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove("active");
+            }
+            
+            const tabs = document.getElementsByClassName("tab");
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove("active");
+            }
+            
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+        
+        // Graphique ACF
+        let acfChart;
+        function updateACF() {
+            const phi = parseFloat(document.getElementById('phi-acf').value);
+            document.getElementById('phi-value-acf').textContent = phi.toFixed(2);
+            
+            const lags = Array.from({length: 21}, (_, i) => i);
+            const acfValues = lags.map(h => Math.pow(Math.abs(phi), h));
+            
+            if (acfChart) acfChart.destroy();
+            
+            acfChart = new Chart(
+                document.getElementById('acf-chart'),
+                {
+                    type: 'bar',
+                    data: {
+                        labels: lags,
+                        datasets: [{
+                            label: 'ACF',
+                            data: acfValues,
+                            backgroundColor: acfValues.map((v, i) => i === 0 ? 'rgba(52, 152, 219, 0.7)' : Math.abs(v) > 2/Math.sqrt(100) ? 'rgba(231, 76, 60, 0.7)' : 'rgba(52, 152, 219, 0.7)'),
+                            borderColor: 'rgba(52, 152, 219, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                min: -1,
+                                max: 1
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `Fonction d'Autocorrélation pour AR(1) avec φ = ${phi.toFixed(2)}`
+                            }
+                        }
+                    }
+                }
+            );
+        }
+        
+        // Graphique PACF
+        let pacfChart;
+        function updatePACF() {
+            const phi = parseFloat(document.getElementById('phi-pacf').value);
+            document.getElementById('phi-value-pacf').textContent = phi.toFixed(2);
+            
+            const lags = Array.from({length: 21}, (_, i) => i);
+            const pacfValues = lags.map(h => h === 0 ? 1 : h === 1 ? phi : 0);
+            
+            if (pacfChart) pacfChart.destroy();
+            
+            pacfChart = new Chart(
+                document.getElementById('pacf-chart'),
+                {
+                    type: 'bar',
+                    data: {
+                        labels: lags,
+                        datasets: [{
+                            label: 'PACF',
+                            data: pacfValues,
+                            backgroundColor: pacfValues.map((v, i) => i === 0 ? 'rgba(52, 152, 219, 0.7)' : Math.abs(v) > 2/Math.sqrt(100) ? 'rgba(231, 76, 60, 0.7)' : 'rgba(52, 152, 219, 0.7)'),
+                            borderColor: 'rgba(52, 152, 219, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                min: -1,
+                                max: 1
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `Fonction d'Autocorrélation Partielle pour AR(1) avec φ = ${phi.toFixed(2)}`
+                            }
+                        }
+                    }
+                }
+            );
+        }
+        
+        // Simulateur AR(1)
+        let simChart;
+        function simulateAR1() {
+            const phi = parseFloat(document.getElementById('phi-sim').value);
+            const sigma = parseFloat(document.getElementById('sigma-sim').value);
+            const n = parseInt(document.getElementById('n-sim').value);
+            
+            // Générer les données AR(1)
+            const data = new Array(n);
+            data[0] = sigma * randn();
+            
+            for (let i = 1; i < n; i++) {
+                data[i] = phi * data[i-1] + sigma * randn();
+            }
+            
+            // Calculer les statistiques empiriques
+            const mean = data.reduce((a, b) => a + b, 0) / n;
+            const variance = data.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / n;
+            
+            // Calculer les statistiques théoriques
+            const theoreticalVariance = sigma * sigma / (1 - phi * phi);
+            
+            // Afficher les statistiques
+            document.getElementById('theoretical-mean').textContent = "0";
+            document.getElementById('theoretical-variance').textContent = theoreticalVariance.toFixed(4);
+            document.getElementById('empirical-mean').textContent = mean.toFixed(4);
+            document.getElementById('empirical-variance').textContent = variance.toFixed(4);
+            
+            // Tracer la série temporelle
+            if (simChart) simChart.destroy();
+            
+            simChart = new Chart(
+                document.getElementById('simulation-chart'),
+                {
+                    type: 'line',
+                    data: {
+                        labels: Array.from({length: n}, (_, i) => i + 1),
+                        datasets: [{
+                            label: 'Série AR(1) simulée',
+                            data: data,
+                            borderColor: 'rgba(231, 76, 60, 1)',
+                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            fill: true,
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `Simulation AR(1) avec φ = ${phi.toFixed(2)}, σ = ${sigma.toFixed(2)}`
+                            }
+                        },
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
+                        }
+                    }
+                }
+            );
+        }
+        
+        // Fonction pour générer des nombres aléatoires selon une loi normale
+        function randn() {
+            let u = 0, v = 0;
+            while (u === 0) u = Math.random();
+            while (v === 0) v = Math.random();
+            return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+        }
+        
+        // Initialiser les graphiques
+        document.addEventListener('DOMContentLoaded', function() {
+            updateACF();
+            updatePACF();
+            simulateAR1();
+        });
+    </script>
 </body>
 </html>

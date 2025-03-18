@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preuve de la moyenne d'un processus AR(1)</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            line-height: 1.6;
+            margin: 40px;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            color: #1a5276;
+            text-align: center;
+            border-bottom: 2px solid #1a5276;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2874a6;
+            margin-top: 30px;
+        }
+        .definition {
+            background-color: #eaf2f8;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+        .theorem {
+            background-color: #e8f8f5;
+            padding: 15px;
+            border-left: 4px solid #16a085;
+            margin: 20px 0;
+        }
+        .proof {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #7f8c8d;
+            margin: 20px 0;
+        }
+        .note {
+            background-color: #fef9e7;
+            padding: 15px;
+            border-left: 4px solid #f1c40f;
+            margin: 20px 0;
+        }
+        .formula {
+            font-style: italic;
+            margin: 15px 0;
+            text-align: center;
+        }
+        .qed {
+            text-align: right;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Preuve de la moyenne d'un processus AR(1)</h1>
+
+    <div class="definition">
+        <h2>Définition du processus AR(1)</h2>
+        <p>Un processus autorégressif d'ordre 1, noté AR(1), est défini par l'équation récursive suivante :</p>
+        <div class="formula">
+            X_t = c + \phi X_{t-1} + \varepsilon_t
+        </div>
+        <p>où :</p>
+        <ul>
+            <li>\( X_t \) est la valeur du processus au temps t</li>
+            <li>\( c \) est une constante</li>
+            <li>\( \phi \) est le paramètre autorégressif (avec \( |\phi| < 1 \) pour assurer la stationnarité)</li>
+            <li>\( \varepsilon_t \) est un bruit blanc de moyenne nulle et de variance \( \sigma^2_\varepsilon \)</li>
+        </ul>
+    </div>
+
+    <div class="theorem">
+        <h2>Théorème</h2>
+        <p>Si un processus AR(1) est stationnaire et que \( |\phi| < 1 \), alors la moyenne du processus, notée \( \mu = E[X_t] \), est donnée par :</p>
+        <div class="formula">
+            \mu = \frac{c}{1-\phi}
+        </div>
+    </div>
+
+    <div class="proof">
+        <h2>Preuve</h2>
+        
+        <p>Nous cherchons la moyenne d'un processus AR(1) stationnaire. La stationnarité implique que la moyenne est constante dans le temps, c'est-à-dire \( E[X_t] = E[X_{t-1}] = \mu \) pour tout t.</p>
+        
+        <p>Commençons par l'équation du processus AR(1) :</p>
+        <div class="formula">
+            X_t = c + \phi X_{t-1} + \varepsilon_t
+        </div>
+        
+        <p>Prenons l'espérance mathématique des deux côtés de cette équation :</p>
+        <div class="formula">
+            E[X_t] = E[c + \phi X_{t-1} + \varepsilon_t]
+        </div>
+        
+        <p>Par linéarité de l'espérance :</p>
+        <div class="formula">
+            E[X_t] = E[c] + E[\phi X_{t-1}] + E[\varepsilon_t]
+        </div>
+        
+        <p>Comme \( c \) est une constante, \( E[c] = c \). De plus, \( \phi \) est également une constante, donc \( E[\phi X_{t-1}] = \phi E[X_{t-1}] \). Par hypothèse, \( \varepsilon_t \) est un bruit blanc de moyenne nulle, donc \( E[\varepsilon_t] = 0 \). Ainsi :</p>
+        <div class="formula">
+            E[X_t] = c + \phi E[X_{t-1}] + 0
+        </div>
+        <div class="formula">
+            E[X_t] = c + \phi E[X_{t-1}]
+        </div>
+        
+        <p>Comme nous avons supposé que le processus est stationnaire, \( E[X_t] = E[X_{t-1}] = \mu \) pour tout t. En substituant :</p>
+        <div class="formula">
+            \mu = c + \phi \mu
+        </div>
+        
+        <p>Résolvons cette équation pour \( \mu \) :</p>
+        <div class="formula">
+            \mu - \phi \mu = c
+        </div>
+        <div class="formula">
+            \mu(1 - \phi) = c
+        </div>
+        <div class="formula">
+            \mu = \frac{c}{1-\phi}
+        </div>
+        
+        <p>Cette formule est valide uniquement lorsque \( |\phi| < 1 \), ce qui est précisément la condition de stationnarité pour un processus AR(1).</p>
+        
+        <div class="qed">∎</div>
+    </div>
+
+    <div class="note">
+        <h2>Remarques importantes</h2>
+        <ul>
+            <li>La condition \( |\phi| < 1 \) est cruciale pour la stationnarité du processus AR(1). Si \( |\phi| \geq 1 \), le processus n'est pas stationnaire et la formule ci-dessus n'est pas applicable.</li>
+            <li>Lorsque \( \phi = 0 \), le processus AR(1) se réduit à un bruit blanc avec dérive, et la moyenne devient simplement \( \mu = c \).</li>
+            <li>Lorsque \( c = 0 \), la moyenne du processus est \( \mu = 0 \), ce qui correspond à un processus AR(1) centré.</li>
+            <li>Plus \( \phi \) est proche de 1, plus la moyenne \( \mu \) est amplifiée par rapport à la constante \( c \).</li>
+        </ul>
+    </div>
+</body>
+</html>

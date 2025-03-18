@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Propriétés statistiques d'un processus MA(1)</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        :root {
+            --primary-color: #1a5276;
+            --secondary-color: #2980b9;
+            --accent-color: #f39c12;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-color);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            overflow: hidden;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--light-color);
+            padding-bottom: 20px;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        h2 {
+            color: var(--secondary-color);
+            font-size: 1.8rem;
+            margin: 30px 0 15px;
+            padding-left: 10px;
+            border-left: 5px solid var(--secondary-color);
+        }
+        
+        .equation-container {
+            background-color: var(--light-color);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            transition: transform 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .step-explanation {
+            margin: 15px 0;
+        }
+        
+        .definition {
+            background-color: rgba(41, 128, 185, 0.1);
+            padding: 15px;
+            border-left: 4px solid var(--secondary-color);
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .final-result {
+            background-color: rgba(243, 156, 18, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid var(--accent-color);
+            font-weight: bold;
+        }
+        
+        .interactive-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input[type="range"], input[type="number"] {
+            width: 100%;
+        }
+        
+        button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: var(--primary-color);
+        }
+        
+        .property-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .property-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-title {
+            font-size: 1.3rem;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        
+        canvas {
+            width: 100%;
+            height: 300px;
+            margin: 20px 0;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            color: var(--dark-color);
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #f1f1f1;
+            border: none;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            border-radius: 5px 5px 0 0;
+        }
+        
+        .tab.active {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                margin-right: 0;
+                border-radius: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="animate__animated animate__fadeInDown">
+            <h1>Processus à Moyenne Mobile d'Ordre 1</h1>
+            <p>Analyse détaillée des propriétés statistiques d'un MA(1)</p>
+        </header>
+        
+        <div class="definition animate__animated animate__fadeIn">
+            <p>Un processus MA(1) est défini par l'équation :
+            \[X_t = \varepsilon_t + \theta \varepsilon_{t-1}\]
+            où \(\varepsilon_t \sim \text{WN}(0, \sigma^2_{\varepsilon})\) est un bruit blanc de moyenne nulle et de variance \(\sigma^2_{\varepsilon}\).</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="openTab(event, 'mean')">Moyenne</button>
+            <button class="tab" onclick="openTab(event, 'variance')">Variance</button>
+            <button class="tab" onclick="openTab(event, 'autocovariance')">Autocovariance</button>
+            <button class="tab" onclick="openTab(event, 'autocorrelation')">Autocorrélation</button>
+            <button class="tab" onclick="openTab(event, 'pacf')">PACF</button>
+            <button class="tab" onclick="openTab(event, 'invertibility')">Inversibilité</button>
+            <button class="tab" onclick="openTab(event, 'simulator')">Simulateur</button>
+        </div>
+        
+        <div id="mean" class="tab-content active">
+            <h2>Calcul de la Moyenne</h2>
+            
+            <div class="equation-container">
+                <p>Prenons l'espérance de \(X_t\) :</p>
+                \[E[X_t] = E[\varepsilon_t + \theta \varepsilon_{t-1}] = E[\varepsilon_t] + \theta E[\varepsilon_{t-1}]\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Comme \(E[\varepsilon_t] = E[\varepsilon_{t-1}] = 0\) (propriété du bruit blanc), nous obtenons :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[E[X_t] = 0 + \theta \cdot 0 = 0\]
+            </div>
+            
+            <div class="final-result">
+                \[\mu = E[X_t] = 0\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Contrairement au processus AR(1), la moyenne d'un processus MA(1) est toujours égale à 0, quelle que soit la valeur de \(\theta\).</p>
+            </div>
+        </div>
+        
+        <div id="variance" class="tab-content">
+            <h2>Calcul de la Variance</h2>
+            
+            <div class="equation-container">
+                <p>La variance de \(X_t\) est donnée par :</p>
+                \[\text{Var}(X_t) = \text{Var}(\varepsilon_t + \theta \varepsilon_{t-1})\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Comme \(\varepsilon_t\) et \(\varepsilon_{t-1}\) sont indépendants (propriété du bruit blanc), nous avons :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\begin{align*}
+                \text{Var}(X_t) &= \text{Var}(\varepsilon_t) + \text{Var}(\theta \varepsilon_{t-1}) + 2\text{Cov}(\varepsilon_t, \theta \varepsilon_{t-1}) \\
+                &= \sigma^2_{\varepsilon} + \theta^2 \sigma^2_{\varepsilon} + 2\theta \cdot 0 \\
+                &= \sigma^2_{\varepsilon}(1 + \theta^2)
+                \end{align*}\]
+            </div>
+            
+            <div class="final-result">
+                \[\gamma(0) = \text{Var}(X_t) = \sigma^2_{\varepsilon}(1 + \theta^2)\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>La variance d'un processus MA(1) est toujours finie et ne dépend que de \(\theta\) et de la variance du bruit \(\sigma^2_{\varepsilon}\).</p>
+                <p>Remarque importante : Un processus MA(1) est toujours stationnaire quelle que soit la valeur de \(\theta\), contrairement au processus AR(1) qui exige \(|\phi| < 1\) pour être stationnaire.</p>
+            </div>
+        </div>
+        
+        <div id="autocovariance" class="tab-content">
+            <h2>Calcul de l'Autocovariance</h2>
+            
+            <div class="equation-container">
+                <p>L'autocovariance à un décalage \(h\) est définie par :</p>
+                \[\gamma(h) = \text{Cov}(X_t, X_{t+h})\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Pour \(h = 1\) :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\begin{align*}
+                \gamma(1) &= \text{Cov}(X_t, X_{t+1}) \\
+                &= \text{Cov}(\varepsilon_t + \theta \varepsilon_{t-1}, \varepsilon_{t+1} + \theta \varepsilon_t) \\
+                \end{align*}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Développons cette covariance :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\begin{align*}
+                \gamma(1) &= \text{Cov}(\varepsilon_t, \varepsilon_{t+1}) + \text{Cov}(\varepsilon_t, \theta\varepsilon_t) + \text{Cov}(\theta\varepsilon_{t-1}, \varepsilon_{t+1}) + \text{Cov}(\theta\varepsilon_{t-1}, \theta\varepsilon_t) \\
+                &= 0 + \theta\text{Var}(\varepsilon_t) + 0 + 0 \\
+                &= \theta\sigma^2_{\varepsilon}
+                \end{align*}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Pour \(h = 2\) :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\begin{align*}
+                \gamma(2) &= \text{Cov}(X_t, X_{t+2}) \\
+                &= \text{Cov}(\varepsilon_t + \theta \varepsilon_{t-1}, \varepsilon_{t+2} + \theta \varepsilon_{t+1})
+                \end{align*}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Développons cette covariance :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\begin{align*}
+                \gamma(2) &= \text{Cov}(\varepsilon_t, \varepsilon_{t+2}) + \text{Cov}(\varepsilon_t, \theta\varepsilon_{t+1}) + \text{Cov}(\theta\varepsilon_{t-1}, \varepsilon_{t+2}) + \text{Cov}(\theta\varepsilon_{t-1}, \theta\varepsilon_{t+1}) \\
+                &= 0 + 0 + 0 + 0 \\
+                &= 0
+                \end{align*}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Ainsi, pour tout \(h > 1\), \(\gamma(h) = 0\).</p>
+            </div>
+            
+            <div class="final-result">
+                \[\gamma(h) = 
+                \begin{cases}
+                \sigma^2_{\varepsilon}(1 + \theta^2) & \text{pour } h = 0 \\
+                \theta\sigma^2_{\varepsilon} & \text{pour } |h| = 1 \\
+                0 & \text{pour } |h| > 1
+                \end{cases}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Cette propriété est très importante : l'autocovariance d'un processus MA(1) est nulle au-delà du décalage 1. Cela signifie que les observations séparées de plus d'une période ne sont pas linéairement corrélées.</p>
+            </div>
+        </div>
+        
+        <div id="autocorrelation" class="tab-content">
+            <h2>Calcul de l'Autocorrélation (ACF)</h2>
+            
+            <div class="equation-container">
+                <p>L'autocorrélation à un décalage \(h\) est définie par :</p>
+                \[\rho(h) = \frac{\gamma(h)}{\gamma(0)}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>En utilisant les résultats précédents :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\rho(1) = \frac{\gamma(1)}{\gamma(0)} = \frac{\theta\sigma^2_{\varepsilon}}{\sigma^2_{\varepsilon}(1 + \theta^2)} = \frac{\theta}{1 + \theta^2}\]
+            </div>
+            
+            <div class="equation-container">
+                \[\rho(h) = 0 \quad \text{pour } |h| > 1\]
+            </div>
+            
+            <div class="final-result">
+                \[\rho(h) = 
+                \begin{cases}
+                1 & \text{pour } h = 0 \\
+                \frac{\theta}{1 + \theta^2} & \text{pour } |h| = 1 \\
+                0 & \text{pour } |h| > 1
+                \end{cases}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>L'ACF d'un processus MA(1) a une "coupure" après le décalage 1. C'est une caractéristique distinctive des processus à moyenne mobile : pour un MA(q), l'ACF est nulle après le décalage q.</p>
+                <p>Remarque : \(|\rho(1)| \leq 0.5\) pour tout \(\theta\), avec \(\rho(1) = 0.5\) quand \(\theta = 1\) et \(\rho(1) = -0.5\) quand \(\theta = -1\).</p>
+            </div>
+            
+            <div class="interactive-section">
+                <h3>Visualisation de l'autocorrélation</h3>
+                <div class="form-group">
+                    <label for="theta-acf">Coefficient θ : <span id="theta-value-acf">0.7</span></label>
+                    <input type="range" id="theta-acf" min="-3" max="3" step="0.1" value="0.7" oninput="updateACF()">
+                </div>
+                <canvas id="acf-chart"></canvas>
+            </div>
+        </div>
+        
+        <div id="pacf" class="tab-content">
+            <h2>Calcul de l'Autocorrélation Partielle (PACF)</h2>
+            
+            <div class="equation-container">
+                <p>Pour un processus MA(1), la fonction d'autocorrélation partielle (PACF) est plus complexe que pour l'AR(1) et décroît de façon exponentielle.</p>
+            </div>
+            
+            <div class="step-explanation">
+                <p>Nous pouvons calculer les premiers termes à partir des équations de Yule-Walker :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\phi_{11} = \rho(1) = \frac{\theta}{1 + \theta^2}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Pour \(h \geq 2\), la PACF suit une décroissance exponentielle qui dépend de la valeur de \(\theta\) :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\phi_{hh} = \begin{cases}
+                \frac{\theta}{1 + \theta^2} & \text{pour } h = 1 \\
+                \frac{\theta^h - \theta^{h-2}}{1 + \theta^2} & \text{pour } h \geq 2
+                \end{cases}\]
+            </div>
+            
+            <div class="final-result">
+                \[\phi_{hh} \approx \begin{cases}
+                \frac{\theta}{1 + \theta^2} & \text{pour } h = 1 \\
+                (-\theta)^{h-1}\frac{\theta^2}{1+\theta^2} & \text{pour } h \geq 2 \text{ et } |\theta| < 1
+                \end{cases}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Contrairement à l'ACF qui a une coupure après le décalage 1, la PACF du MA(1) a une décroissance progressive, qui peut être approximée par une exponentielle pour \(|\theta| < 1\).</p>
+            </div>
+            
+            <div class="interactive-section">
+                <h3>Visualisation de l'autocorrélation partielle</h3>
+                <div class="form-group">
+                    <label for="theta-pacf">Coefficient θ : <span id="theta-value-pacf">0.7</span></label>
+                    <input type="range" id="theta-pacf" min="-3" max="3" step="0.1" value="0.7" oninput="updatePACF()">
+                </div>
+                <canvas id="pacf-chart"></canvas>
+            </div>
+        </div>
+        
+        <div id="invertibility" class="tab-content">
+            <h2>Condition d'Inversibilité</h2>
+            
+            <div class="equation-container">
+                <p>Un processus MA(1) peut être réécrit comme un processus AR(∞) sous certaines conditions :</p>
+                \[X_t = \varepsilon_t + \theta \varepsilon_{t-1} = \varepsilon_t + \theta L \varepsilon_t\]
+                \[X_t = (1 + \theta L) \varepsilon_t\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Pour exprimer \(\varepsilon_t\) en fonction des \(X_t\), nous avons besoin de l'inverse de l'opérateur \((1 + \theta L)\) :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\varepsilon_t = \frac{1}{1 + \theta L} X_t\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Si \(|\theta| < 1\), nous pouvons développer cette fraction en série :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\frac{1}{1 + \theta L} = \sum_{j=0}^{\infty} (-\theta L)^j\]
+                \[\varepsilon_t = \sum_{j=0}^{\infty} (-\theta)^j X_{t-j}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Par conséquent, le processus MA(1) peut être réécrit comme un processus AR(∞) lorsque \(|\theta| < 1\). Cette condition est appelée "condition d'inversibilité".</p>
+            </div>
+            
+            <div class="final-result">
+                \[\text{Condition d'inversibilité : } |\theta| < 1\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>L'inversibilité est importante pour la prévision et l'estimation des paramètres. Un MA(1) inversible a une représentation AR unique, ce qui facilite l'inférence statistique.</p>
+                <p>Remarque : Tous les processus MA(q) sont stationnaires, mais pour qu'ils soient inversibles, les racines du polynôme caractéristique doivent être de module strictement supérieur à 1.</p>
+            </div>
+        </div>
+        
+        <div id="simulator" class="tab-content">
+            <h2>Simulateur de Processus MA(1)</h2>
+            
+            <div class="interactive-section">
+                <h3>Paramètres du modèle</h3>
+                <div class="form-group">
+                    <label for="theta-sim">Coefficient θ :</label>
+                    <input type="range" id="theta-sim" min="-3" max="3" step="0.1" value="0.7" oninput="document.getElementById('theta-value-sim').textContent = this.value">
+                    <span id="theta-value-sim">0.7</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="sigma-sim">Écart-type du bruit σ :</label>
+                    <input type="range" id="sigma-sim" min="0.1" max="5" step="0.1" value="1" oninput="document.getElementById('sigma-value-sim').textContent = this.value">
+                    <span id="sigma-value-sim">1</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="n-sim">Nombre d'observations :</label>
+                    <input type="range" id="n-sim" min="50" max="500" step="10" value="200" oninput="document.getElementById('n-value-sim').textContent = this.value">
+                    <span id="n-value-sim">200</span>
+                </div>
+                
+                <button onclick="simulateMA1()">Simuler le processus</button>
+                
+                <canvas id="simulation-chart"></canvas>
+                
+                <div id="properties-container">
+                    <h3>Propriétés du processus simulé</h3>
+                    <div class="property-card">
+                        <div class="card-title">Moyenne théorique</div>
+                        <div id="theoretical-mean">0</div>
+                    </div>
+                    <div class="property-card">
+                        <div class="card-title">Variance théorique</div>
+                        <div id="theoretical-variance"></div>
+                    </div>
+                    <div class="property-card">
+                        <div class="card-title">Moyenne empirique</div>
+                        <div id="empirical-mean"></div>
+                    </div>
+                    <div class="property-card">
+                        <div class="card-title">Variance empirique</div>
+                        <div id="empirical-variance"></div>
+                    </div>
+                    <div class="property-card">
+                        <div class="card-title">Autocorrélation lag 1 théorique</div>
+                        <div id="theoretical-acf1"></div>
+                    </div>
+                    <div class="property-card">
+                        <div class="card-title">Autocorrélation lag 1 empirique</div>
+                        <div id="empirical-acf1"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="interactive-section">
+            <h2>Résumé des propriétés statistiques du MA(1)</h2>
+            <div class="final-result">
+                \[\begin{align*}
+                \text{Moyenne: } & \mu = 0 \\
+                \text{Variance: } & \gamma(0) = \sigma^2_{\varepsilon}(1 + \theta^2) \\
+                \text{Autocovariance: } & \gamma(h) = 
+                \begin{cases}
+                \sigma^2_{\varepsilon}(1 + \theta^2) & \text{pour } h = 0 \\
+                \theta\sigma^2_{\varepsilon} & \text{pour } |h| = 1 \\
+                0 & \text{pour } |h| > 1
+                \end{cases} \\
+                \text{Autocorrélation: } & \rho(h) = 
+                \begin{cases}
+                1 & \text{pour } h = 0 \\
+                \frac{\theta}{1 + \theta^2} & \text{pour } |h| = 1 \\
+                0 & \text{pour } |h| > 1
+                \end{cases} \\
+                \text{Condition d'inversibilité: } & |\theta| < 1
+                \end{align*}\]
+            </div>
+            <p>Un processus MA(1) est toujours stationnaire, quelle que soit la valeur de \(\theta\).</p>
+        </div>
+        
+        <footer>
+            <p>© 2023 Analyse des Séries Temporelles | Calculateur de Propriétés MA(1)</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Observer pour animer les équations au scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        document.querySelectorAll('.equation-container').forEach(eq => {
+            observer.observe(eq);
+        });
+        
+        // Gestion des onglets
+        function openTab(evt, tabName) {
+            const tabContents = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove("active");
+            }
+            
+            const tabs = document.getElementsByClassName("tab");
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove("active");
+            }
+            
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+        
+        // Fonction pour calculer la PACF d'un MA(1)
+        function calculatePACF(theta, maxLag) {
+            const pacf = new Array(maxLag + 1);
+            pacf[0] = 1; // Pour h = 0
+            pacf[1] = theta / (1 + theta * theta); // Pour h = 1
+            
+            // Approximation pour h >= 2
+            for (let h = 2; h <= maxLag; h++) {
+                if (Math.abs(theta) < 1) {
+                    // Approximation pour |theta| < 1
+                    pacf[h] = Math.pow(-theta, h-1) * (theta * theta) / (1 + theta * theta);
+                } else {
+                    // Formule plus générale
+                    pacf[h] = (Math.pow(theta, h) - Math.pow(theta, h-2)) / (1 + theta * theta);
+                }
+            }
+            
+            return pacf;
+        }
+        
+        // Graphique ACF
+        let acfChart;
+        function updateACF() {
+            const theta = parseFloat(document.getElementById('theta-acf').value);
+            document.getElementById('theta-value-acf').textContent = theta.toFixed(2);
+            
+            const lags = Array.from({length: 21}, (_, i) => i);
+            const acfValues = lags.map(h => {
+                if (h === 0) return 1;
+                else if (h === 1) return theta / (1 + theta * theta);
+                else return 0;
+            });
+            
+            if (acfChart) acfChart.destroy();
+            
+            acfChart = new Chart(
+                document.getElementById('acf-chart'),
+                {
+                    type: 'bar',
+                    data: {
+                        labels: lags,
+                        datasets: [{
+                            label: 'ACF',
+                            data: acfValues,
+                            backgroundColor: acfValues.map((v, i) => i === 0 ? 'rgba(41, 128, 185, 0.7)' : Math.abs(v) > 2/Math.sqrt(100) ? 'rgba(243, 156, 18, 0.7)' : 'rgba(41, 128, 185, 0.7)'),
+                            borderColor: 'rgba(41, 128, 185, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                min: -1,
+                                max: 1
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `Fonction d'Autocorrélation pour MA(1) avec θ = ${theta.toFixed(2)}`
+                            }
+                        }
+                    }
+                }
+            );
+        }
+        
+        // Graphique PACF
+        let pacfChart;
+        function updatePACF() {
+            const theta = parseFloat(document.getElementById('theta-pacf').value);
+            document.getElementById('theta-value-pacf').textContent = theta.toFixed(2);
+            
+            const lags = Array.from({length: 21}, (_, i) => i);
+            const pacfValues = calculatePACF(theta, 20);
+            
+            if (pacfChart) pacfChart.destroy();
+            
+            pacfChart = new Chart(
+                document.getElementById('pacf-chart'),
+                {
+                    type: 'bar',
+                    data: {
+                        labels: lags,
+                        datasets: [{
+                            label: 'PACF',
+                            data: pacfValues,
+                            backgroundColor: pacfValues.map((v, i) => i === 0 ? 'rgba(41, 128, 185, 0.7)' : Math.abs(v) > 2/Math.sqrt(100) ? 'rgba(243, 156, 18, 0.7)' : 'rgba(41, 128, 185, 0.7)'),
+                            borderColor: 'rgba(41, 128, 185, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                min: -1,
+                                max: 1
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `Fonction d'Autocorrélation Partielle pour MA(1) avec θ = ${theta.toFixed(2)}`
+                            }
+                        }
+                    }
+                }
+            );
+        }
+        
+        // Simulateur MA(1)
+        let simChart;
+        function simulateMA1() {
+            const theta = parseFloat(document.getElementById('theta-sim').value);
+            const sigma = parseFloat(document.getElementById('sigma-sim').value);
+            const n = parseInt(document.getElementById('n-sim').value);
+            
+            // Générer les erreurs
+            const errors = new Array(n+1);
+            for (let i = 0; i <= n; i++) {
+                errors[i] = sigma * randn();
+            }
+            
+            // Générer les données MA(1)
+            const data = new Array(n);
+            for (let i = 0; i < n; i++) {
+                data[i] = errors[i+1] + theta * errors[i];
+            }
+            
+            // Calculer les statistiques empiriques
+            const mean = data.reduce((a, b) => a + b, 0) / n;
+            const variance = data.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / n;
+            
+            // Calculer l'autocorrélation empirique lag 1
+            let acf1 = 0;
+            for (let i = 0; i < n - 1; i++) {
+                acf1 += (data[i] - mean) * (data[i+1] - mean);
+            }
+            acf1 = acf1 / ((n-1) * variance);
+            
+            // Calculer les statistiques théoriques
+            const theoreticalVariance = sigma * sigma * (1 + theta * theta);
+            const theoreticalACF1 = theta / (1 + theta * theta);
+            
+            // Afficher les statistiques
+            document.getElementById('theoretical-mean').textContent = "0";
+            document.getElementById('theoretical-variance').textContent = theoreticalVariance.toFixed(4);
+            document.getElementById('empirical-mean').textContent = mean.toFixed(4);
+            document.getElementById('empirical-variance').textContent = variance.toFixed(4);
+            document.getElementById('theoretical-acf1').textContent = theoreticalACF1.toFixed(4);
+            document.getElementById('empirical-acf1').textContent = acf1.toFixed(4);
+            
+            // Tracer la série temporelle
+            if (simChart) simChart.destroy();
+            
+            simChart = new Chart(
+                document.getElementById('simulation-chart'),
+                {
+                    type: 'line',
+                    data: {
+                        labels: Array.from({length: n}, (_, i) => i + 1),
+                        datasets: [{
+                            label: 'Série MA(1) simulée',
+                            data: data,
+                            borderColor: 'rgba(243, 156, 18, 1)',
+                            backgroundColor: 'rgba(243, 156, 18, 0.1)',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            fill: true,
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `Simulation MA(1) avec θ = ${theta.toFixed(2)}, σ = ${sigma.toFixed(2)}`
+                            }
+                        },
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
+                        }
+                    }
+                }
+            );
+        }
+        
+        // Fonction pour générer des nombres aléatoires selon une loi normale
+        function randn() {
+            let u = 0, v = 0;
+            while (u === 0) u = Math.random();
+            while (v === 0) v = Math.random();
+            return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+        }
+        
+        // Initialiser les graphiques
+        document.addEventListener('DOMContentLoaded', function() {
+            updateACF();
+            updatePACF();
+            simulateMA1();
+        });
+    </script>
+</body>
+</html>

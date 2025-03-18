@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Propriétés statistiques d'un processus AR(1)</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-color);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            overflow: hidden;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--light-color);
+            padding-bottom: 20px;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        h2 {
+            color: var(--secondary-color);
+            font-size: 1.8rem;
+            margin: 30px 0 15px;
+            padding-left: 10px;
+            border-left: 5px solid var(--secondary-color);
+        }
+        
+        .equation-container {
+            background-color: var(--light-color);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            transition: transform 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .step-explanation {
+            margin: 15px 0;
+        }
+        
+        .definition {
+            background-color: rgba(52, 152, 219, 0.1);
+            padding: 15px;
+            border-left: 4px solid var(--secondary-color);
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .final-result {
+            background-color: rgba(231, 76, 60, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid var(--accent-color);
+            font-weight: bold;
+        }
+        
+        .interactive-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input[type="range"], input[type="number"] {
+            width: 100%;
+        }
+        
+        button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: var(--primary-color);
+        }
+        
+        .property-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .property-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-title {
+            font-size: 1.3rem;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        
+        canvas {
+            width: 100%;
+            height: 300px;
+            margin: 20px 0;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            color: var(--dark-color);
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #f1f1f1;
+            border: none;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+        }
+        
+        .tab.active {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="animate__animated animate__fadeInDown">
+            <h1>Processus Autorégressif d'Ordre 1</h1>
+            <p>Analyse détaillée des propriétés statistiques d'un AR(1)</p>
+        </header>
+        
+        <div class="definition animate__animated animate__fadeIn">
+            <p>Un processus AR(1) est défini par l'équation :
+            \[X_t = \phi X_{t-1} + \varepsilon_t\]
+            où \(\varepsilon_t \sim \text{WN}(0, \sigma^2_{\varepsilon})\) est un bruit blanc de moyenne nulle et de variance \(\sigma^2_{\varepsilon}\).</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="openTab(event, 'mean')">Moyenne</button>
+            <button class="tab" onclick="openTab(event, 'variance')">Variance</button>
+            <button class="tab" onclick="openTab(event, 'autocovariance')">Autocovariance</button>
+            <button class="tab" onclick="openTab(event, 'autocorrelation')">Autocorrélation</button>
+            <button class="tab" onclick="openTab(event, 'pacf')">PACF</button>
+            <button class="tab" onclick="openTab(event, 'simulator')">Simulateur</button>
+        </div>
+        
+        <div id="mean" class="tab-content active">
+            <h2>Calcul de la Moyenne</h2>
+            
+            <div class="equation-container">
+                <p>Prenons l'espérance de \(X_t\) :</p>
+                \[E[X_t] = E[\phi X_{t-1} + \varepsilon_t] = \phi E[X_{t-1}] + E[\varepsilon_t]\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Comme \(E[\varepsilon_t] = 0\) et en supposant que le processus est stationnaire (c'est-à-dire \(E[X_t] = E[X_{t-1}] = \mu\)), nous obtenons :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\mu = \phi \mu + 0\]
+                \[\mu(1 - \phi) = 0\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Si \(\phi \neq 1\) (condition de stationnarité), alors :</p>
+            </div>
+            
+            <div class="final-result">
+                \[\mu = E[X_t] = 0 \quad \text{pour} \quad |\phi| < 1\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Si \(\phi = 1\), le processus est non stationnaire (marche aléatoire) et la moyenne n'est pas définie.</p>
+            </div>
+        </div>
+        
+        <div id="variance" class="tab-content">
+            <h2>Calcul de la Variance</h2>
+            
+            <div class="equation-container">
+                <p>Pour un processus stationnaire, la variance est constante :</p>
+                \[\text{Var}(X_t) = \text{Var}(X_{t-1}) = \gamma(0)\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Calculons la variance de \(X_t\) :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\begin{align*}
+                \text{Var}(X_t) &= \text{Var}(\phi X_{t-1} + \varepsilon_t) \\
+                &= \phi^2 \text{Var}(X_{t-1}) + \text{Var}(\varepsilon_t) + 2\phi \text{Cov}(X_{t-1}, \varepsilon_t)
+                \end{align*}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Comme \(\varepsilon_t\) est indépendant de \(X_{t-1}\), \(\text{Cov}(X_{t-1}, \varepsilon_t) = 0\), et :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\gamma(0) = \phi^2 \gamma(0) + \sigma^2_{\varepsilon}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Résolvons pour \(\gamma(0)\) :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\gamma(0)(1 - \phi^2) = \sigma^2_{\varepsilon}\]
+            </div>
+            
+            <div class="final-result">
+                \[\gamma(0) = \frac{\sigma^2_{\varepsilon}}{1 - \phi^2} \quad \text{pour} \quad |\phi| < 1\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Cette variance existe seulement si \(|\phi| < 1\) (condition de stationnarité).</p>
+            </div>
+        </div>
+        
+        <div id="autocovariance" class="tab-content">
+            <h2>Calcul de l'Autocovariance</h2>
+            
+            <div class="equation-container">
+                <p>L'autocovariance à un décalage \(h\) est définie par :</p>
+                \[\gamma(h) = \text{Cov}(X_t, X_{t+h})\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Pour \(h = 1\) :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\begin{align*}
+                \gamma(1) &= \text{Cov}(X_t, X_{t+1}) \\
+                &= \text{Cov}(X_t, \phi X_t + \varepsilon_{t+1}) \\
+                &= \phi \text{Cov}(X_t, X_t) + \text{Cov}(X_t, \varepsilon_{t+1})
+                \end{align*}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Comme \(\varepsilon_{t+1}\) est indépendant de \(X_t\), \(\text{Cov}(X_t, \varepsilon_{t+1}) = 0\), donc :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\gamma(1) = \phi \gamma(0) = \phi \frac{\sigma^2_{\varepsilon}}{1 - \phi^2}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Par récurrence, pour tout \(h \geq 1\) :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\gamma(h) = \phi^h \gamma(0) = \phi^h \frac{\sigma^2_{\varepsilon}}{1 - \phi^2}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>De plus, comme l'autocovariance est une fonction paire, pour \(h < 0\) :</p>
+            </div>
+            
+            <div class="final-result">
+                \[\gamma(h) = \phi^{|h|} \frac{\sigma^2_{\varepsilon}}{1 - \phi^2} \quad \text{pour} \quad h \in \mathbb{Z}\]
+            </div>
+        </div>
+        
+        <div id="autocorrelation" class="tab-content">
+            <h2>Calcul de l'Autocorrélation (ACF)</h2>
+            
+            <div class="equation-container">
+                <p>L'autocorrélation à un décalage \(h\) est définie par :</p>
+                \[\rho(h) = \frac{\gamma(h)}{\gamma(0)}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>En utilisant les résultats précédents :</p>
+            </div>
+            
+            <div class="equation-container">
+                \[\rho(h) = \frac{\phi^{|h|} \frac{\sigma^2_{\varepsilon}}{1 - \phi^2}}{\frac{\sigma^2_{\varepsilon}}{1 - \phi^2}} = \phi^{|h|}\]
+            </div>
+            
+            <div class="final-result">
+                \[\rho(h) = \phi^{|h|} \quad \text{pour} \quad h \in \mathbb{Z}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>L'ACF d'un processus AR(1) décroît de façon exponentielle à un taux \(|\phi|\).</p>
+            </div>
+            
+            <div class="interactive-section">
+                <h3>Visualisation de l'autocorrélation</h3>
+                <div class="form-group">
+                    <label for="phi-acf">Coefficient φ : <span id="phi-value-acf">0.7</span></label>
+                    <input type="range" id="phi-acf" min="-0.99" max="0.99" step="0.01" value="0.7" oninput="updateACF()">
+                </div>
+                <canvas id="acf-chart"></canvas>
+            </div>
+        </div>
+        
+        <div id="pacf" class="tab-content">
+            <h2>Calcul de l'Autocorrélation Partielle (PACF)</h2>
+            
+            <div class="equation-container">
+                <p>Pour un processus AR(1), la fonction d'autocorrélation partielle (PACF) prend les valeurs suivantes :</p>
+            </div>
+            
+            <div class="step-explanation">
+                <p>\(\phi_{11} = \rho(1) = \phi\) (pour le décalage 1)</p>
+                <p>\(\phi_{hh} = 0\) pour \(h > 1\)</p>
+            </div>
+            
+            <div class="final-result">
+                \[\phi_{hh} = 
+                \begin{cases}
+                \phi & \text{pour } h = 1 \\
+                0 & \text{pour } h > 1
+                \end{cases}\]
+            </div>
+            
+            <div class="step-explanation">
+                <p>Cela signifie que l'autocorrélation partielle est significative uniquement au premier décalage (caractéristique d'un processus AR(1)) et nulle pour tous les autres décalages.</p>
+            </div>
+            
+            <div class="interactive-section">
+                <h3>Visualisation de l'autocorrélation partielle</h3>
+                <div class="form-group">
+                    <label for="phi-pacf">Coefficient φ : <span id="phi-value-pacf">0.7</span></label>
+                    <input type="range" id="phi-pacf" min="-0.99" max="0.99" step="0.01" value="0.7" oninput="updatePACF()">
+                </div>
+                <canvas id="pacf-chart"></canvas>
+            </div>
+        </div>
+        
+        <div id="simulator" class="tab-content">
+            <h2>Simulateur de Processus AR(1)</h2>
+            
+            <div class="interactive-section">
+                <h3>Paramètres du modèle</h3>
+                <div class="form-group">
+                    <label for="phi-sim">Coefficient φ :</label>
+                    <input type="range" id="phi-sim" min="-0.99" max="0.99" step="0.01" value="0.7" oninput="document.getElementById('phi-value-sim').textContent = this.value">
+                    <span id="phi-value-sim">0.7</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="sigma-sim">Écart-type du bruit σ :</label>
+                    <input type="range" id="sigma-sim" min="0.1" max="5" step="0.1" value="1" oninput="document.getElementById('sigma-value-sim').textContent = this.value">
+                    <span id="sigma-value-sim">1</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="n-sim">Nombre d'observations :</label>
+                    <input type="range" id="n-sim" min="50" max="500" step="10" value="200" oninput="document.getElementById('n-value-sim').textContent = this.value">
+                    <span id="n-value-sim">200</span>
+                </div>
+                
+                <button onclick="simulateAR1()">Simuler le processus</button>
+                
+                <canvas id="simulation-chart"></canvas>
+                
+                <div id="properties-container">
+                    <h3>Propriétés du processus simulé</h3>
+                    <div class="property-card">
+                        <div class="card-title">Moyenne théorique</div>
+                        <div id="theoretical-mean">0</div>
+                    </div>
+                    <div class="property-card">
+                        <div class="card-title">Variance théorique</div>
+                        <div id="theoretical-variance"></div>
+                    </div>
+                    <div class="property-card">
+                        <div class="card-title">Moyenne empirique</div>
+                        <div id="empirical-mean"></div>
+                    </div>
+                    <div class="property-card">
+                        <div class="card-title">Variance empirique</div>
+                        <div id="empirical-variance"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="interactive-section">
+            <h2>Résumé des propriétés statistiques de l'AR(1)</h2>
+            <div class="final-result">
+                \[\begin{align*}
+                \text{Moyenne: } & \mu = 0 \\
+                \text{Variance: } & \gamma(0) = \frac{\sigma^2_{\varepsilon}}{1-\phi^2} \\
+                \text{Autocovariance: } & \gamma(h) = \phi^{|h|}\frac{\sigma^2_{\varepsilon}}{1-\phi^2} \\
+                \text{Autocorrélation: } & \rho(h) = \phi^{|h|} \\
+                \text{Autocorrélation partielle: } & \phi_{hh} = 
+                \begin{cases}
+                \phi & \text{pour } h = 1 \\
+                0 & \text{pour } h > 1
+                \end{cases}
+                \end{align*}\]
+            </div>
+            <p>Toutes ces propriétés sont valables sous la condition de stationnarité \(|\phi| < 1\).</p>
+        </div>
+        
+        <footer>
+            <p>© 2023 Analyse des Séries Temporelles | Calculateur de Propriétés AR(1)</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Observer pour animer les équations au scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        document.querySelectorAll('.equation-container').forEach(eq => {
+            observer.observe(eq);
+        });
+        
+        // Gestion des onglets
+        function openTab(evt, tabName) {
+            const tabContents = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove("active");
+            }
+            
+            const tabs = document.getElementsByClassName("tab");
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove("active");
+            }
+            
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+        
+        // Graphique ACF
+        let acfChart;
+        function updateACF() {
+            const phi = parseFloat(document.getElementById('phi-acf').value);
+            document.getElementById('phi-value-acf').textContent = phi.toFixed(2);
+            
+            const lags = Array.from({length: 21}, (_, i) => i);
+            const acfValues = lags.map(h => Math.pow(Math.abs(phi), h));
+            
+            if (acfChart) acfChart.destroy();
+            
+            acfChart = new Chart(
+                document.getElementById('acf-chart'),
+                {
+                    type: 'bar',
+                    data: {
+                        labels: lags,
+                        datasets: [{
+                            label: 'ACF',
+                            data: acfValues,
+                            backgroundColor: acfValues.map((v, i) => i === 0 ? 'rgba(52, 152, 219, 0.7)' : Math.abs(v) > 2/Math.sqrt(100) ? 'rgba(231, 76, 60, 0.7)' : 'rgba(52, 152, 219, 0.7)'),
+                            borderColor: 'rgba(52, 152, 219, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                min: -1,
+                                max: 1
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `Fonction d'Autocorrélation pour AR(1) avec φ = ${phi.toFixed(2)}`
+                            }
+                        }
+                    }
+                }
+            );
+        }
+        
+        // Graphique PACF
+        let pacfChart;
+        function updatePACF() {
+            const phi = parseFloat(document.getElementById('phi-pacf').value);
+            document.getElementById('phi-value-pacf').textContent = phi.toFixed(2);
+            
+            const lags = Array.from({length: 21}, (_, i) => i);
+            const pacfValues = lags.map(h => h === 0 ? 1 : h === 1 ? phi : 0);
+            
+            if (pacfChart) pacfChart.destroy();
+            
+            pacfChart = new Chart(
+                document.getElementById('pacf-chart'),
+                {
+                    type: 'bar',
+                    data: {
+                        labels: lags,
+                        datasets: [{
+                            label: 'PACF',
+                            data: pacfValues,
+                            backgroundColor: pacfValues.map((v, i) => i === 0 ? 'rgba(52, 152, 219, 0.7)' : Math.abs(v) > 2/Math.sqrt(100) ? 'rgba(231, 76, 60, 0.7)' : 'rgba(52, 152, 219, 0.7)'),
+                            borderColor: 'rgba(52, 152, 219, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                min: -1,
+                                max: 1
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `Fonction d'Autocorrélation Partielle pour AR(1) avec φ = ${phi.toFixed(2)}`
+                            }
+                        }
+                    }
+                }
+            );
+        }
+        
+        // Simulateur AR(1)
+        let simChart;
+        function simulateAR1() {
+            const phi = parseFloat(document.getElementById('phi-sim').value);
+            const sigma = parseFloat(document.getElementById('sigma-sim').value);
+            const n = parseInt(document.getElementById('n-sim').value);
+            
+            // Générer les données AR(1)
+            const data = new Array(n);
+            data[0] = sigma * randn();
+            
+            for (let i = 1; i < n; i++) {
+                data[i] = phi * data[i-1] + sigma * randn();
+            }
+            
+            // Calculer les statistiques empiriques
+            const mean = data.reduce((a, b) => a + b, 0) / n;
+            const variance = data.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / n;
+            
+            // Calculer les statistiques théoriques
+            const theoreticalVariance = sigma * sigma / (1 - phi * phi);
+            
+            // Afficher les statistiques
+            document.getElementById('theoretical-mean').textContent = "0";
+            document.getElementById('theoretical-variance').textContent = theoreticalVariance.toFixed(4);
+            document.getElementById('empirical-mean').textContent = mean.toFixed(4);
+            document.getElementById('empirical-variance').textContent = variance.toFixed(4);
+            
+            // Tracer la série temporelle
+            if (simChart) simChart.destroy();
+            
+            simChart = new Chart(
+                document.getElementById('simulation-chart'),
+                {
+                    type: 'line',
+                    data: {
+                        labels: Array.from({length: n}, (_, i) => i + 1),
+                        datasets: [{
+                            label: 'Série AR(1) simulée',
+                            data: data,
+                            borderColor: 'rgba(231, 76, 60, 1)',
+                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            fill: true,
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `Simulation AR(1) avec φ = ${phi.toFixed(2)}, σ = ${sigma.toFixed(2)}`
+                            }
+                        },
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
+                        }
+                    }
+                }
+            );
+        }
+        
+        // Fonction pour générer des nombres aléatoires selon une loi normale
+        function randn() {
+            let u = 0, v = 0;
+            while (u === 0) u = Math.random();
+            while (v === 0) v = Math.random();
+            return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+        }
+        
+        // Initialiser les graphiques
+        document.addEventListener('DOMContentLoaded', function() {
+            updateACF();
+            updatePACF();
+            simulateAR1();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1570 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Propriétés statistiques des processus temporels</title>
+    <script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.js">
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&family=Playfair+Display:wght@400;700;900&family=Source+Sans+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2a4365;
+            --secondary-color: #f0f5fa;
+            --ar1-color: #3182ce;
+            --ar1-light: #bee3f8;
+            --ar2-color: #2b6cb0;
+            --ar2-light: #c3dafe;
+            --ma1-color: #805ad5;
+            --ma1-light: #e9d8fd;
+            --ma2-color: #6b46c1;
+            --ma2-light: #d6bcfa;
+            --arma-color: #38a169;
+            --arma-light: #c6f6d5;
+            --text-color: #2d3748;
+            --light-text: #718096;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --glow: 0 0 20px rgba(66, 153, 225, 0.4);
+            --border-radius: 12px;
+            --section-gap: 60px;
+            --transition-time: 0.3s;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Source Sans Pro', sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0;
+            line-height: 1.8;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            overflow-x: hidden;
+        }
+        
+        h1, h2, h3, h4 {
+            font-family: 'Playfair Display', serif;
+            color: var(--primary-color);
+            line-height: 1.3;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            text-align: center;
+            margin: 20px 0 30px 0;
+            padding-bottom: 20px;
+            background: linear-gradient(90deg, var(--primary-color), var(--ar1-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            letter-spacing: -0.03em;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--ar1-color));
+            border-radius: 5px;
+        }
+        
+        h2 {
+            font-size: 2.2rem;
+            margin: 40px 0 30px 0;
+            position: relative;
+            display: inline-block;
+        }
+        
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 100px;
+            height: 4px;
+            border-radius: 2px;
+        }
+        
+        .section-ar1 h2 {
+            color: var(--ar1-color);
+        }
+        .section-ar1 h2::after {
+            background: var(--ar1-color);
+        }
+        
+        .section-ar2 h2 {
+            color: var(--ar2-color);
+        }
+        .section-ar2 h2::after {
+            background: var(--ar2-color);
+        }
+        
+        .section-ma1 h2 {
+            color: var(--ma1-color);
+        }
+        .section-ma1 h2::after {
+            background: var(--ma1-color);
+        }
+        
+        .section-ma2 h2 {
+            color: var(--ma2-color);
+        }
+        .section-ma2 h2::after {
+            background: var(--ma2-color);
+        }
+        
+        .section-arma h2 {
+            color: var(--arma-color);
+        }
+        .section-arma h2::after {
+            background: var(--arma-color);
+        }
+        
+        h3 {
+            font-size: 1.6rem;
+            margin: 30px 0 20px 0;
+        }
+        
+        .section-ar1 h3 {
+            color: var(--ar1-color);
+        }
+        
+        .section-ar2 h3 {
+            color: var(--ar2-color);
+        }
+        
+        .section-ma1 h3 {
+            color: var(--ma1-color);
+        }
+        
+        .section-ma2 h3 {
+            color: var(--ma2-color);
+        }
+        
+        .section-arma h3 {
+            color: var(--arma-color);
+        }
+        
+        h4 {
+            font-size: 1.2rem;
+            margin: 20px 0 15px 0;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+        }
+        
+        .section-ar1 h4 {
+            color: var(--ar1-color);
+        }
+        
+        .section-ar2 h4 {
+            color: var(--ar2-color);
+        }
+        
+        .section-ma1 h4 {
+            color: var(--ma1-color);
+        }
+        
+        .section-ma2 h4 {
+            color: var(--ma2-color);
+        }
+        
+        .section-arma h4 {
+            color: var(--arma-color);
+        }
+        
+        p, li {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            line-height: 1.7;
+        }
+        
+        .header-section {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 30px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+        
+        .header-section p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 20px auto;
+            color: var(--light-text);
+        }
+        
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 30px 0;
+            padding: 0 20px;
+        }
+        
+        .nav-tab {
+            padding: 12px 20px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all var(--transition-time) ease;
+            border: none;
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+        
+        .nav-tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-tab-ar1 {
+            border-bottom: 3px solid var(--ar1-color);
+        }
+        
+        .nav-tab-ar1.active {
+            background: var(--ar1-color);
+            color: white;
+        }
+        
+        .nav-tab-ar2 {
+            border-bottom: 3px solid var(--ar2-color);
+        }
+        
+        .nav-tab-ar2.active {
+            background: var(--ar2-color);
+            color: white;
+        }
+        
+        .nav-tab-ma1 {
+            border-bottom: 3px solid var(--ma1-color);
+        }
+        
+        .nav-tab-ma1.active {
+            background: var(--ma1-color);
+            color: white;
+        }
+        
+        .nav-tab-ma2 {
+            border-bottom: 3px solid var(--ma2-color);
+        }
+        
+        .nav-tab-ma2.active {
+            background: var(--ma2-color);
+            color: white;
+        }
+        
+        .nav-tab-arma {
+            border-bottom: 3px solid var(--arma-color);
+        }
+        
+        .nav-tab-arma.active {
+            background: var(--arma-color);
+            color: white;
+        }
+        
+        .content-sections {
+            padding: 0 20px 40px 20px;
+        }
+        
+        .main-section {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: var(--section-gap);
+            overflow: hidden;
+            transition: transform var(--transition-time) ease, box-shadow var(--transition-time) ease;
+            display: none;
+        }
+        
+        .section-ar1.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .section-ar2.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .section-ma1.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .section-ma2.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .section-arma.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .section-ar1:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow), 0 0 20px rgba(49, 130, 206, 0.4);
+        }
+        
+        .section-ar2:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow), 0 0 20px rgba(43, 108, 176, 0.4);
+        }
+        
+        .section-ma1:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow), 0 0 20px rgba(128, 90, 213, 0.4);
+        }
+        
+        .section-ma2:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow), 0 0 20px rgba(107, 70, 193, 0.4);
+        }
+        
+        .section-arma:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow), 0 0 20px rgba(56, 161, 105, 0.4);
+        }
+        
+        .section-header {
+            color: white;
+            padding: 20px 30px;
+            position: relative;
+        }
+        
+        .section-ar1 .section-header {
+            background: linear-gradient(90deg, var(--ar1-color), #4299e1);
+        }
+        
+        .section-ar2 .section-header {
+            background: linear-gradient(90deg, var(--ar2-color), #4c51bf);
+        }
+        
+        .section-ma1 .section-header {
+            background: linear-gradient(90deg, var(--ma1-color), #9f7aea);
+        }
+        
+        .section-ma2 .section-header {
+            background: linear-gradient(90deg, var(--ma2-color), #9061f9);
+        }
+        
+        .section-arma .section-header {
+            background: linear-gradient(90deg, var(--arma-color), #48bb78);
+        }
+        
+        .section-header h2 {
+            color: white;
+            margin: 0;
+            font-size: 1.8rem;
+        }
+        
+        .section-header h2::after {
+            display: none;
+        }
+        
+        .section-body {
+            padding: 30px;
+        }
+        
+        .math-block {
+            padding: 25px;
+            border-radius: var(--border-radius);
+            margin: 25px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            overflow-x: auto;
+            text-align: center;
+            position: relative;
+        }
+        
+        .section-ar1 .math-block {
+            background: var(--ar1-light);
+        }
+        
+        .section-ar1 .math-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--ar1-color);
+            border-radius: var(--border-radius) 0 0 var(--border-radius);
+        }
+        
+        .section-ar2 .math-block {
+            background: var(--ar2-light);
+        }
+        
+        .section-ar2 .math-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--ar2-color);
+            border-radius: var(--border-radius) 0 0 var(--border-radius);
+        }
+        
+        .section-ma1 .math-block {
+            background: var(--ma1-light);
+        }
+        
+        .section-ma1 .math-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--ma1-color);
+            border-radius: var(--border-radius) 0 0 var(--border-radius);
+        }
+        
+        .section-ma2 .math-block {
+            background: var(--ma2-light);
+        }
+        
+        .section-ma2 .math-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--ma2-color);
+            border-radius: var(--border-radius) 0 0 var(--border-radius);
+        }
+        
+        .section-arma .math-block {
+            background: var(--arma-light);
+        }
+        
+        .section-arma .math-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--arma-color);
+            border-radius: var(--border-radius) 0 0 var(--border-radius);
+        }
+        
+        ul {
+            padding-left: 25px;
+            margin-bottom: 20px;
+        }
+        
+        li {
+            margin-bottom: 12px;
+            position: relative;
+        }
+        
+        .section-ar1 li::before {
+            content: "•";
+            color: var(--ar1-color);
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+        
+        .section-ar2 li::before {
+            content: "•";
+            color: var(--ar2-color);
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+        
+        .section-ma1 li::before {
+            content: "•";
+            color: var(--ma1-color);
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+        
+        .section-ma2 li::before {
+            content: "•";
+            color: var(--ma2-color);
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+        
+        .section-arma li::before {
+            content: "•";
+            color: var(--arma-color);
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+        
+        .step {
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin: 30px 0;
+            position: relative;
+            border-left: 5px solid;
+        }
+        
+        .section-ar1 .step {
+            background: var(--ar1-light);
+            border-left-color: var(--ar1-color);
+        }
+        
+        .section-ar2 .step {
+            background: var(--ar2-light);
+            border-left-color: var(--ar2-color);
+        }
+        
+        .section-ma1 .step {
+            background: var(--ma1-light);
+            border-left-color: var(--ma1-color);
+        }
+        
+        .section-ma2 .step {
+            background: var(--ma2-light);
+            border-left-color: var(--ma2-color);
+        }
+        
+        .section-arma .step {
+            background: var(--arma-light);
+            border-left-color: var(--arma-color);
+        }
+        
+        .step-number {
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-family: 'Montserrat', sans-serif;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-ar1 .step-number {
+            background: var(--ar1-color);
+        }
+        
+        .section-ar2 .step-number {
+            background: var(--ar2-color);
+        }
+        
+        .section-ma1 .step-number {
+            background: var(--ma1-color);
+        }
+        
+        .section-ma2 .step-number {
+            background: var(--ma2-color);
+        }
+        
+        .section-arma .step-number {
+            background: var(--arma-color);
+        }
+        
+        .important {
+            padding: 25px 30px;
+            margin: 30px 0;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+            position: relative;
+        }
+        
+        .important::before {
+            content: "Important";
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            color: white;
+            padding: 3px 15px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .section-ar1 .important {
+            background-color: rgba(49, 130, 206, 0.05);
+            border-left: 5px solid var(--ar1-color);
+        }
+        
+        .section-ar1 .important::before {
+            background: var(--ar1-color);
+        }
+        
+        .section-ar2 .important {
+            background-color: rgba(43, 108, 176, 0.05);
+            border-left: 5px solid var(--ar2-color);
+        }
+        
+        .section-ar2 .important::before {
+            background: var(--ar2-color);
+        }
+        
+        .section-ma1 .important {
+            background-color: rgba(128, 90, 213, 0.05);
+            border-left: 5px solid var(--ma1-color);
+        }
+        
+        .section-ma1 .important::before {
+            background: var(--ma1-color);
+        }
+        
+        .section-ma2 .important {
+            background-color: rgba(107, 70, 193, 0.05);
+            border-left: 5px solid var(--ma2-color);
+        }
+        
+        .section-ma2 .important::before {
+            background: var(--ma2-color);
+        }
+        
+        .section-arma .important {
+            background-color: rgba(56, 161, 105, 0.05);
+            border-left: 5px solid var(--arma-color);
+        }
+        
+        .section-arma .important::before {
+            background: var(--arma-color);
+        }
+        
+        .note {
+            padding: 25px 30px;
+            margin: 30px 0;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+            position: relative;
+            background-color: rgba(236, 201, 75, 0.05);
+            border-left: 5px solid #ecc94b;
+        }
+        
+        .note::before {
+            content: "Note";
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: #ecc94b;
+            color: white;
+            padding: 3px 15px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .conclusion {
+            padding: 25px 30px;
+            margin: 30px 0;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+            position: relative;
+            background-color: rgba(72, 187, 120, 0.05);
+            border-left: 5px solid #48bb78;
+        }
+        
+        .conclusion::before {
+            content: "Conclusion";
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: #48bb78;
+            color: white;
+            padding: 3px 15px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .formula-result {
+            color: white;
+            padding: 15px 30px;
+            border-radius: var(--border-radius);
+            margin: 30px 0;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+        
+        .section-ar1 .formula-result {
+            background: linear-gradient(to right, var(--primary-color), var(--ar1-color));
+        }
+        
+        .section-ar2 .formula-result {
+            background: linear-gradient(to right, var(--primary-color), var(--ar2-color));
+        }
+        
+        .section-ma1 .formula-result {
+            background: linear-gradient(to right, var(--primary-color), var(--ma1-color));
+        }
+        
+        .section-ma2 .formula-result {
+            background: linear-gradient(to right, var(--primary-color), var(--ma2-color));
+        }
+        
+        .section-arma .formula-result {
+            background: linear-gradient(to right, var(--primary-color), var(--arma-color));
+        }
+        
+        .formula-result p {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1.15rem;
+        }
+        
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+        
+        .grid-item {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+        
+        .section-ar1 .grid-item {
+            border-top: 3px solid var(--ar1-color);
+        }
+        
+        .section-ar2 .grid-item {
+            border-top: 3px solid var(--ar2-color);
+        }
+        
+        .section-ma1 .grid-item {
+            border-top: 3px solid var(--ma1-color);
+        }
+        
+        .section-ma2 .grid-item {
+            border-top: 3px solid var(--ma2-color);
+        }
+        
+        .section-arma .grid-item {
+            border-top: 3px solid var(--arma-color);
+        }
+        
+        .grid-item h4 {
+            margin-top: 0;
+        }
+        
+        .legend-panel {
+            position: relative;
+            color: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            margin: 50px 0;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        
+        .section-ar1 .legend-panel {
+            background: linear-gradient(135deg, var(--primary-color), var(--ar1-color));
+        }
+        
+        .section-ar2 .legend-panel {
+            background: linear-gradient(135deg, var(--primary-color), var(--ar2-color));
+        }
+        
+        .section-ma1 .legend-panel {
+            background: linear-gradient(135deg, var(--primary-color), var(--ma1-color));
+        }
+        
+        .section-ma2 .legend-panel {
+            background: linear-gradient(135deg, var(--primary-color), var(--ma2-color));
+        }
+        
+        .section-arma .legend-panel {
+            background: linear-gradient(135deg, var(--primary-color), var(--arma-color));
+        }
+        
+        .legend-panel::before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            left: -50px;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        
+        .legend-panel::after {
+            content: "";
+            position: absolute;
+            bottom: -80px;
+            right: -80px;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+        }
+        
+        .legend-panel h3 {
+            color: white;
+            margin-top: 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .legend-panel p {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        
+        .comparison-table th {
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .section-ar1 .comparison-table th {
+            background: linear-gradient(to right, var(--primary-color), var(--ar1-color));
+        }
+        
+        .section-ar2 .comparison-table th {
+            background: linear-gradient(to right, var(--primary-color), var(--ar2-color));
+        }
+        
+        .section-ma1 .comparison-table th {
+            background: linear-gradient(to right, var(--primary-color), var(--ma1-color));
+        }
+        
+        .section-ma2 .comparison-table th {
+            background: linear-gradient(to right, var(--primary-color), var(--ma2-color));
+        }
+        
+        .section-arma .comparison-table th {
+            background: linear-gradient(to right, var(--primary-color), var(--arma-color));
+        }
+        
+        .comparison-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px;
+            background: var(--primary-color);
+            color: white;
+            margin-top: 40px;
+        }
+        
+        footer p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            h2 {
+                font-size: 1.8rem;
+            }
+            
+            h3 {
+                font-size: 1.4rem;
+            }
+            
+            .math-block {
+                padding: 15px;
+            }
+            
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-tab {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Styles pour les badges des processus */
+        .model-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-right: 10px;
+        }
+        
+        .badge-ar1 {
+            background: var(--ar1-color);
+        }
+        
+        .badge-ar2 {
+            background: var(--ar2-color);
+        }
+        
+        .badge-ma1 {
+            background: var(--ma1-color);
+        }
+        
+        .badge-ma2 {
+            background: var(--ma2-color);
+        }
+        
+        .badge-arma {
+            background: var(--arma-color);
+        }
+        
+        /* Style pour le tableau de comparaison global */
+        .comparison-section {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: var(--section-gap);
+            overflow: hidden;
+            padding: 30px;
+        }
+        
+        .comparison-section h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+        
+        .comparison-section h2::after {
+            background: var(--primary-color);
+        }
+        
+        .global-comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        
+        .global-comparison-table th {
+            background: linear-gradient(to right, var(--primary-color), #4a5568);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .global-comparison-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .global-comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .global-comparison-table tr:nth-child(even) {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+        
+        .property-col {
+            font-weight: 600;
+            width: 20%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-section">
+        <h1>Propriétés statistiques des processus temporels</h1>
+        <p>Analyse complète des processus AR(1), AR(2), MA(1), MA(2) et ARMA(1,1)</p>
+    </div>
+
+    <div class="nav-tabs">
+        <button class="nav-tab nav-tab-ar1 active" onclick="switchTab('ar1')">Processus AR(1)</button>
+        <button class="nav-tab nav-tab-ar2" onclick="switchTab('ar2')">Processus AR(2)</button>
+        <button class="nav-tab nav-tab-ma1" onclick="switchTab('ma1')">Processus MA(1)</button>
+        <button class="nav-tab nav-tab-ma2" onclick="switchTab('ma2')">Processus MA(2)</button>
+        <button class="nav-tab nav-tab-arma" onclick="switchTab('arma')">Processus ARMA(1,1)</button>
+    </div>
+    
+    <div class="comparison-section">
+        <h2>Comparaison des propriétés statistiques</h2>
+        <p>Le tableau ci-dessous résume les principales propriétés statistiques des cinq processus temporels étudiés.</p>
+        
+        <table class="global-comparison-table">
+            <thead>
+                <tr>
+                    <th class="property-col">Propriété</th>
+                    <th>
+                        <span class="model-badge badge-ar1">AR(1)</span>
+                    </th>
+                    <th>
+                        <span class="model-badge badge-ar2">AR(2)</span>
+                    </th>
+                    <th>
+                        <span class="model-badge badge-ma1">MA(1)</span>
+                    </th>
+                    <th>
+                        <span class="model-badge badge-ma2">MA(2)</span>
+                    </th>
+                    <th>
+                        <span class="model-badge badge-arma">ARMA(1,1)</span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="property-col">Définition</td>
+                    <td>\(X_t = \phi X_{t-1} + \epsilon_t\)</td>
+                    <td>\(X_t = \phi_1 X_{t-1} + \phi_2 X_{t-2} + \epsilon_t\)</td>
+                    <td>\(X_t = \epsilon_t + \theta \epsilon_{t-1}\)</td>
+                    <td>\(X_t = \epsilon_t + \theta_1 \epsilon_{t-1} + \theta_2 \epsilon_{t-2}\)</td>
+                    <td>\(X_t = \phi X_{t-1} + \epsilon_t + \theta \epsilon_{t-1}\)</td>
+                </tr>
+                <tr>
+                    <td class="property-col">Stationnarité</td>
+                    <td>\(|\phi| < 1\)</td>
+                    <td>\(\phi_1 + \phi_2 < 1\)<br>\(\phi_2 - \phi_1 < 1\)<br>\(|\phi_2| < 1\)</td>
+                    <td>Toujours stationnaire</td>
+                    <td>Toujours stationnaire</td>
+                    <td>\(|\phi| < 1\)</td>
+                </tr>
+                <tr>
+                    <td class="property-col">Espérance<br>(avec constante)</td>
+                    <td>\(\frac{\mu_0}{1-\phi}\)</td>
+                    <td>\(\frac{\mu_0}{1-\phi_1-\phi_2}\)</td>
+                    <td>\(\mu\)</td>
+                    <td>\(\mu\)</td>
+                    <td>\(\frac{c}{1-\phi}\)</td>
+                </tr>
+                <tr>
+                    <td class="property-col">Variance</td>
+                    <td>\(\frac{\sigma^2_\epsilon}{1-\phi^2}\)</td>
+                    <td>\(\frac{\sigma^2_\epsilon(1-\phi_2)}{(1-\phi_2)^2-\phi_1^2}\)</td>
+                    <td>\(\sigma^2_\epsilon(1+\theta^2)\)</td>
+                    <td>\(\sigma^2_\epsilon(1+\theta_1^2+\theta_2^2)\)</td>
+                    <td>\(\sigma^2_\epsilon \frac{1+\theta^2+2\phi\theta}{1-\phi^2}\)</td>
+                </tr>
+                <tr>
+                    <td class="property-col">Comportement<br>de l'ACF</td>
+                    <td>Décroissance<br>exponentielle<br>\(\rho_h = \phi^h\)</td>
+                    <td>Décroissance<br>exponentielle ou<br>oscillations amorties</td>
+                    <td>Coupure après<br>décalage 1<br>\(\rho_1 = \frac{\theta}{1+\theta^2}\)</td>
+                    <td>Coupure après<br>décalage 2</td>
+                    <td>Décroissance<br>exponentielle avec<br>"saut" initial</td>
+                </tr>
+                <tr>
+                    <td class="property-col">Caractéristique<br>distinctive</td>
+                    <td>Dépendance temporelle<br>potentiellement longue</td>
+                    <td>Possibilité d'oscillations<br>et de cycles</td>
+                    <td>Effet limité à<br>une période</td>
+                    <td>Effet limité à<br>deux périodes</td>
+                    <td>Combinaison de<br>mémoire longue et<br>d'effets transitoires</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="content-sections">
+        <!-- AR(1) Section -->
+        <div class="main-section section-ar1 active" id="ar1-content">
+            <div class="section-header">
+                <h2>1. Processus AR(1)</h2>
+            </div>
+            <div class="section-body">
+                <p>Le processus autorégressif d'ordre 1, noté \(AR(1)\), est défini par l'équation de récurrence suivante :</p>
+
+                <div class="math-block">
+                \[
+                    X_t = \phi X_{t-1} + \epsilon_t, \quad t \in \mathbb{Z}
+                \]
+                </div>
+
+                <p>où :</p>
+                <ul>
+                    <li>\(\phi\) est un paramètre réel tel que \(|\phi| < 1\) pour assurer la stationnarité du processus.</li>
+                    <li>\((\epsilon_t)_{t\in \mathbb{Z}}\) est un bruit blanc centré, c'est-à-dire une suite de variables aléatoires indépendantes et identiquement distribuées telles que \(\mathbb{E}[\epsilon_t] = 0\) et \(\text{Var}(\epsilon_t) = \sigma^2_\epsilon\).</li>
+                </ul>
+
+                <div class="note">
+                    <p>La condition \(|\phi| < 1\) est nécessaire et suffisante pour garantir que le processus soit stationnaire au second ordre.</p>
+                </div>
+
+                <h3>Principales propriétés statistiques</h3>
+
+                <div class="formula-result">
+                    <p><strong>Espérance :</strong> \(\mathbb{E}[X_t] = 0\) (sans constante) ou \(\mathbb{E}[X_t] = \frac{\mu_0}{1-\phi}\) (avec constante \(\mu_0\))</p>
+                </div>
+
+                <div class="formula-result">
+                    <p><strong>Variance :</strong> \(\text{Var}(X_t) = \frac{\sigma^2_\epsilon}{1-\phi^2}\)</p>
+                </div>
+
+                <div class="formula-result">
+                    <p><strong>Autocovariance :</strong> \(\gamma_h = \frac{\phi^{|h|}\sigma^2_\epsilon}{1-\phi^2}\)</p>
+                </div>
+
+                <div class="formula-result">
+                    <p><strong>Autocorrélation :</strong> \(\rho_h = \phi^{|h|}\)</p>
+                </div>
+
+                <div class="important">
+                    <p>L'autocorrélation du processus AR(1) a une forme particulièrement simple : elle décroît exponentiellement avec le décalage \(h\) et dépend uniquement du paramètre autorégressif \(\phi\).</p>
+                </div>
+
+                <h3>Caractéristiques clés</h3>
+                <ul>
+                    <li>Pour \(\phi > 0\), l'autocorrélation est toujours positive et décroît lentement (processus à mémoire longue pour \(\phi\) proche de 1).</li>
+                    <li>Pour \(\phi < 0\), l'autocorrélation alterne de signe avec le décalage \(h\), ce qui indique une tendance à l'oscillation du processus.</li>
+                    <li>Plus \(|\phi|\) est proche de 1, plus la variance du processus est grande, ce qui reflète l'accumulation des effets du bruit à travers le temps.</li>
+                    <li>La fonction d'autocorrélation partielle (PACF) d'un AR(1) présente une coupure nette après le décalage 1.</li>
+                </ul>
+
+                <div class="legend-panel">
+                    <h3>Applications typiques</h3>
+                    <p>Le processus AR(1) est particulièrement adapté pour modéliser :</p>
+                    <ul>
+                        <li>Des séries avec une forte persistance temporelle</li>
+                        <li>Des phénomènes présentant une tendance locale à revenir vers une moyenne</li>
+                        <li>Des processus économiques ou financiers avec un effet "mémoire"</li>
+                        <li>Des séries de données où les valeurs successives sont fortement corrélées</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- AR(2) Section -->
+        <div class="main-section section-ar2" id="ar2-content">
+            <div class="section-header">
+                <h2>2. Processus AR(2)</h2>
+            </div>
+            <div class="section-body">
+                <p>Le processus autorégressif d'ordre 2, noté \(AR(2)\), est défini par l'équation de récurrence suivante :</p>
+
+                <div class="math-block">
+                \[
+                    X_t = \phi_1 X_{t-1} + \phi_2 X_{t-2} + \epsilon_t, \quad t \in \mathbb{Z}
+                \]
+                </div>
+
+                <p>où :</p>
+                <ul>
+                    <li>\(\phi_1\) et \(\phi_2\) sont des paramètres réels qui doivent satisfaire certaines conditions pour assurer la stationnarité.</li>
+                    <li>\((\epsilon_t)_{t\in \mathbb{Z}}\) est un bruit blanc centré avec \(\mathbb{E}[\epsilon_t] = 0\) et \(\text{Var}(\epsilon_t) = \sigma^2_\epsilon\).</li>
+                </ul>
+
+                <div class="note">
+                    <p>Les conditions de stationnarité pour un processus \(AR(2)\) sont :</p>
+                    <ul>
+                        <li>\(\phi_1 + \phi_2 < 1\)</li>
+                        <li>\(\phi_2 - \phi_1 < 1\)</li>
+                        <li>\(|\phi_2| < 1\)</li>
+                    </ul>
+                    <p>Ces conditions garantissent que les racines du polynôme caractéristique \(1 - \phi_1 z - \phi_2 z^2 = 0\) se trouvent à l'extérieur du cercle unité du plan complexe.</p>
+                </div>
+
+                <h3>Principales propriétés statistiques</h3>
+
+                <div class="formula-result">
+                    <p><strong>Espérance :</strong> \(\mathbb{E}[X_t] = 0\) (sans constante) ou \(\mathbb{E}[X_t] = \frac{\mu_0}{1-\phi_1-\phi_2}\) (avec constante \(\mu_0\))</p>
+                </div>
+
+                <div class="formula-result">
+                    <p><strong>Variance :</strong> \(\text{Var}(X_t) = \frac{\sigma^2_\epsilon(1-\phi_2)}{(1-\phi_2)^2-\phi_1^2}\)</p>
+                </div>
+
+                <div class="formula-result">
+                    <p><strong>Autocovariance :</strong><br>
+                    \(\gamma_1 = \frac{\phi_1\gamma_0}{1-\phi_2}\)<br>
+                    \(\gamma_h = \phi_1\gamma_{h-1} + \phi_2\gamma_{h-2}, h \geq 2\)</p>
+                </div>
+
+                <div class="formula-result">
+                    <p><strong>Autocorrélation :</strong><br>
+                    \(\rho_1 = \frac{\phi_1}{1-\phi_2}\)<br>
+                    \(\rho_h = \phi_1\rho_{h-1} + \phi_2\rho_{h-2}, h \geq 2\)</p>
+                </div>
+
+                <div class="important">
+                    <p>La fonction d'autocorrélation (ACF) d'un processus AR(2) peut présenter différents comportements selon les valeurs des paramètres \(\phi_1\) et \(\phi_2\) :</p>
+                    <ul>
+                        <li>Décroissance exponentielle monotone</li>
+                        <li>Oscillations amorties</li>
+                        <li>Combinaison de ces comportements</li>
+                    </ul>
+                    <p>Cette diversité de comportements permet au modèle AR(2) de capturer des dynamiques temporelles plus complexes que l'AR(1).</p>
+                </div>
+
+                <h3>Caractéristiques clés</h3>
+                <div class="grid-container">
+                    <div class="grid-item">
+                        <h4>AR(2) avec racines réelles positives</h4>
+                        <p>L'ACF décroît de manière monotone sans oscillation, similaire à un AR(1) mais avec un taux de décroissance différent.</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>AR(2) avec racines réelles de signes opposés</h4>
+                        <p>L'ACF présente des oscillations avec une amplitude qui décroît exponentiellement.</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>AR(2) avec racines complexes</h4>
+                        <p>L'ACF présente des oscillations sinusoïdales amorties, caractéristiques des processus avec des cycles réguliers.</p>
+                    </div>
+                </div>
+
+                <div class="legend-panel">
+                    <h3>Applications typiques</h3>
+                    <p>Le processus AR(2) est particulièrement adapté pour modéliser :</p>
+                    <ul>
+                        <li>Des séries temporelles avec des comportements cycliques</li>
+                        <li>Des phénomènes oscillatoires amortis</li>
+                        <li>Des systèmes avec une "seconde mémoire" ou des effets retardés</li>
+                        <li>Des processus où l'ACF présente un changement de signe ou un rebond</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- MA(1) Section -->
+        <div class="main-section section-ma1" id="ma1-content">
+            <div class="section-header">
+                <h2>3. Processus MA(1)</h2>
+            </div>
+            <div class="section-body">
+                <p>Le processus de moyenne mobile d'ordre 1, noté \(MA(1)\), est défini par l'équation :</p>
+
+                <div class="math-block">
+                \[
+                    X_t = \epsilon_t + \theta \epsilon_{t-1}, \quad t \in \mathbb{Z}
+                \]
+                </div>
+
+                <p>où :</p>
+                <ul>
+                    <li>\(\theta\) est un paramètre réel qui détermine l'influence de l'innovation passée.</li>
+                    <li>\((\epsilon_t)_{t\in \mathbb{Z}}\) est un bruit blanc centré avec \(\mathbb{E}[\epsilon_t] = 0\) et \(\text{Var}(\epsilon_t) = \sigma^2_\epsilon\).</li>
+                </ul>
+
+                <div class="note">
+                    <p>Contrairement aux processus AR, les processus MA sont toujours stationnaires quelle que soit la valeur du paramètre \(\theta\). Toutefois, pour assurer l'inversibilité du processus (possibilité de l'exprimer sous forme d'un AR infini), on impose généralement la condition \(|\theta| < 1\).</p>
+                </div>
+
+                <h3>Principales propriétés statistiques</h3>
+
+                <div class="formula-result">
+                    <p><strong>Espérance :</strong> \(\mathbb{E}[X_t] = 0\) (sans constante) ou \(\mathbb{E}[X_t] = \mu\) (avec constante \(\mu\))</p>
+                </div>
+
+                <div class="formula-result">
+                    <p><strong>Variance :</strong> \(\text{Var}(X_t) = \sigma^2_\epsilon(1 + \theta^2)\)</p>
+                </div>
+
+                <div class="formula-result">
+                    <p><strong>Autocovariance :</strong><br>
+                    \(\gamma_0 = \sigma^2_\epsilon(1 + \theta^2)\)<br>
+                    \(\gamma_1 = \theta\sigma^2_\epsilon\)<br>
+                    \(\gamma_h = 0\) pour \(h \geq 2\)</p>
+                </div>
+
+                <div class="formula-result">
+                    <p><strong>Autocorrélation :</strong><br>
+                    \(\rho_1 = \frac{\theta}{1 + \theta^2}\)<br>
+                    \(\rho_h = 0\) pour \(h \geq 2\)</p>
+                </div>
+
+                <div class="important">
+                    <p>Caractéristiques notables de l'autocorrélation du MA(1) :</p>
+                    <ul>
+                        <li>L'autocorrélation au décalage 1 est maximale pour \(\theta = \pm 1\), où \(\rho_1 = \pm 0.5\).</li>
+                        <li>L'autocorrélation présente le même signe que le paramètre \(\theta\).</li>
+                        <li>La valeur maximale de \(|\rho_1|\) est 0.5, ce qui est une limitation inhérente au processus MA(1).</li>
+                        <li>La fonction d'autocorrélation (ACF) se coupe brusquement après le premier décalage, ce qui est une signature caractéristique des processus MA(q).</li>
+                    </ul>
+                </div>
+
+                <h3>Propriétés particulières</h3>
+                <p>Une propriété intéressante de l'autocorrélation du MA(1) est que des valeurs différentes de \(\theta\) peuvent donner la même autocorrélation. En effet, si on pose \(\theta' = 1/\theta\), alors \(\rho_1(\theta') = \rho_1(\theta)\).</p>
+                <p>Cette propriété, connue sous le nom d'inversibilité, explique pourquoi on impose généralement la contrainte \(|\theta| < 1\) pour identifier de manière unique un modèle MA(1).</p>
+
+                <div class="legend-panel">
+                    <h3>Applications typiques</h3>
+                    <p>Le processus MA(1) est particulièrement adapté pour modéliser :</p>
+                    <ul>
+                        <li>Les séries avec des corrélations significatives uniquement à court terme</li>
+                        <li>Les effets temporaires de chocs aléatoires</li>
+                        <li>Les processus avec des inversions rapides de tendance</li>
+                        <li>Les erreurs de mesure ou d'observation dans les données</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- MA(2) Section -->
+        <div class="main-section section-ma2" id="ma2-content">
+            <div class="section-header">
+                <h2>4. Processus MA(2)</h2>
+            </div>
+            <div class="section-body">
+                <p>Le processus de moyenne mobile d'ordre 2, noté \(MA(2)\), est défini par l'équation :</p>
+
+                <div class="math-block">
+                \[
+                    X_t = \epsilon_t + \theta_1 \epsilon_{t-1} + \theta_2 \epsilon_{t-2}, \quad t \in \mathbb{Z}
+                \]
+                </div>
+
+                <p>où :</p>
+                <ul>
+                    <li>\(\theta_1\) et \(\theta_2\) sont des paramètres réels qui déterminent l'influence des innovations passées.</li>
+                    <li>\((\epsilon_t)_{t\in \mathbb{Z}}\) est un bruit blanc centré avec \(\mathbb{E}[\epsilon_t] = 0\) et \(\text{Var}(\epsilon_t) = \sigma^2_\epsilon\).</li>
+                </ul>
+
+                <div class="note">
+                    <p>Comme tous les processus MA, le processus MA(2) est toujours stationnaire quelle que soit la valeur des paramètres \(\theta_1\) et \(\theta_2\). Cependant, pour garantir l'inversibilité du processus, on impose généralement que les racines du polynôme \(1 + \theta_1 z + \theta_2 z^2 = 0\) soient à l'extérieur du cercle unité.</p>
+                </div>
+
+                <h3>Principales propriétés statistiques</h3>
+
+                <div class="formula-result">
+                    <p><strong>Espérance :</strong> \(\mathbb{E}[X_t] = 0\) (sans constante) ou \(\mathbb{E}[X_t] = \mu\) (avec constante \(\mu\))</p>
+                </div>
+
+                <div class="formula-result">
+                    <p><strong>Variance :</strong> \(\text{Var}(X_t) = \sigma^2_\epsilon(1 + \theta_1^2 + \theta_2^2)\)</p>
+                </div>
+
+                <div class="formula-result">
+                    <p><strong>Autocovariance :</strong><br>
+                    \(\gamma_0 = \sigma^2_\epsilon(1 + \theta_1^2 + \theta_2^2)\)<br>
+                    \(\gamma_1 = \sigma^2_\epsilon \theta_1(1 + \theta_2)\)<br>
+                    \(\gamma_2 = \theta_2 \sigma^2_\epsilon\)<br>
+                    \(\gamma_h = 0\) pour \(h \geq 3\)</p>
+                </div>
+
+                <div class="formula-result">
+                    <p><strong>Autocorrélation :</strong><br>
+                    \(\rho_1 = \frac{\theta_1(1 + \theta_2)}{1 + \theta_1^2 + \theta_2^2}\)<br>
+                    \(\rho_2 = \frac{\theta_2}{1 + \theta_1^2 + \theta_2^2}\)<br>
+                    \(\rho_h = 0\) pour \(h \geq 3\)</p>
+                </div>
+
+                <div class="important">
+                    <p>Une caractéristique distinctive du processus MA(2) est que son autocovariance est nulle pour tous les décalages supérieurs à 2. Cette propriété de "mémoire courte" est une généralisation directe du comportement du MA(1), et constitue une signature clé des processus MA(q) où l'autocovariance s'annule pour \(h > q\).</p>
+                </div>
+
+                <h3>Contraintes sur les autocorrélations</h3>
+                <p>Pour un processus MA(2) inversible, les autocorrélations \(\rho_1\) et \(\rho_2\) doivent satisfaire certaines contraintes qui délimitent une région triangulaire dans le plan \((\rho_1, \rho_2)\).</p>
+
+                <h3>Cas particuliers</h3>
+                <div class="grid-container">
+                    <div class="grid-item">
+                        <h4>Cas \(\theta_2 = 0\)</h4>
+                        <p>Le processus se réduit à un MA(1) : \(X_t = \epsilon_t + \theta_1 \epsilon_{t-1}\)</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>Cas \(\theta_1 = 0\)</h4>
+                        <p>On obtient un MA(1) spécial avec un écart de deux périodes : \(X_t = \epsilon_t + \theta_2 \epsilon_{t-2}\)</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>Cas \(\theta_1 = \theta_2\)</h4>
+                        <p>Les deux périodes passées ont la même influence</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>Cas \(\theta_1 = -\theta_2\)</h4>
+                        <p>Les deux périodes passées ont des influences opposées</p>
+                    </div>
+                </div>
+
+                <div class="legend-panel">
+                    <h3>Applications typiques</h3>
+                    <p>Le processus MA(2) est particulièrement utile pour modéliser :</p>
+                    <ul>
+                        <li>Des effets de chocs qui persistent pendant exactement deux périodes</li>
+                        <li>Des séries avec une structure d'autocorrélation non nulle aux deux premiers décalages</li>
+                        <li>Des phénomènes avec des réactions différées ou des effets secondaires</li>
+                        <li>Des séries temporelles où la PACF décroît lentement mais l'ACF est nulle après le décalage 2</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ARMA(1,1) Section -->
+        <div class="main-section section-arma" id="arma-content">
+            <div class="section-header">
+                <h2>5. Processus ARMA(1,1)</h2>
+            </div>
+            <div class="section-body">
+                <p>Le processus autorégressif et moyenne mobile d'ordre (1,1), noté \(ARMA(1,1)\), est défini par l'équation :</p>
+
+                <div class="math-block">
+                \[
+                    X_t = \phi X_{t-1} + \epsilon_t + \theta \epsilon_{t-1}, \quad t \in \mathbb{Z}
+                \]
+                </div>
+
+                <p>où :</p>
+                <ul>
+                    <li>\(\phi\) est le paramètre autorégressif (AR) qui détermine l'influence de la valeur passée \(X_{t-1}\).</li>
+                    <li>\(\theta\) est le paramètre de moyenne mobile (MA) qui détermine l'influence de l'innovation passée \(\epsilon_{t-1}\).</li>
+                    <li>\((\epsilon_t)_{t\in \mathbb{Z}}\) est un bruit blanc centré avec \(\mathbb{E}[\epsilon_t] = 0\) et \(\text{Var}(\epsilon_t) = \sigma^2_\epsilon\).</li>
+                </ul>
+
+                <div class="note">
+                    <p>Le processus ARMA(1,1) est stationnaire si et seulement si \(|\phi| < 1\). Cette condition est identique à celle du processus AR(1), car la composante MA est toujours stationnaire.</p>
+                    <p>Pour l'inversibilité du processus, on impose généralement la condition \(|\theta| < 1\).</p>
+                </div>
+
+                <h3>Principales propriétés statistiques</h3>
+
+                <div class="formula-result">
+                    <p><strong>Espérance :</strong> \(\mathbb{E}[X_t] = 0\) (sans constante) ou \(\mathbb{E}[X_t] = \frac{c}{1 - \phi}\) (avec constante \(c\))</p>
+                </div>
+
+                <div class="formula-result">
+                    <p><strong>Variance :</strong> \(\text{Var}(X_t) = \sigma^2_\epsilon \frac{1 + \theta^2 + 2\phi\theta}{1 - \phi^2}\)</p>
+                </div>
+
+                <div class="formula-result">
+                    <p><strong>Autocovariance :</strong><br>
+                    \(\gamma_0 = \sigma^2_\epsilon \frac{1 + \theta^2 + 2\phi\theta}{1 - \phi^2}\)<br>
+                    \(\gamma_h = \sigma^2_\epsilon \frac{\phi^{h-1}(\phi + \theta)(1 + \phi\theta)}{1 - \phi^2} \quad \text{pour } h \geq 1\)</p>
+                </div>
+
+                <div class="formula-result">
+                    <p><strong>Autocorrélation :</strong><br>
+                    \(\rho_1 = \frac{(\phi + \theta)(1 + \phi\theta)}{1 + \theta^2 + 2\phi\theta}\)<br>
+                    \(\rho_h = \phi^{h-1} \rho_1 \quad \text{pour } h \geq 2\)</p>
+                </div>
+
+                <div class="important">
+                    <p>La fonction d'autocorrélation (ACF) d'un processus ARMA(1,1) présente un comportement particulier :</p>
+                    <ul>
+                        <li>À partir du décalage \(h = 2\), elle suit une décroissance géométrique de raison \(\phi\), identique à celle d'un processus AR(1)</li>
+                        <li>Cependant, la valeur initiale \(\rho_1\) peut être significativement différente de \(\phi\) en raison de l'influence du paramètre MA \(\theta\)</li>
+                        <li>Ce "saut" entre \(\rho_1\) et la tendance géométrique est une signature caractéristique des processus ARMA(1,1)</li>
+                    </ul>
+                </div>
+
+                <h3>Le phénomène de surparamétrisation</h3>
+                <p>Une caractéristique importante des modèles ARMA est le phénomène de surparamétrisation, qui est particulièrement visible dans le modèle ARMA(1,1). Deux ensembles différents de paramètres \((\phi, \theta)\) et \((\phi', \theta')\) peuvent produire des processus stochastiques avec des propriétés statistiques très similaires.</p>
+
+                <h3>Comparaison avec les autres modèles</h3>
+                <table class="comparison-table">
+                    <tr>
+                        <th>Modèle</th>
+                        <th>ACF</th>
+                        <th>PACF</th>
+                    </tr>
+                    <tr>
+                        <td>AR(1)</td>
+                        <td>Décroissance exponentielle dès \(\rho_1\)</td>
+                        <td>Coupure après le décalage 1</td>
+                    </tr>
+                    <tr>
+                        <td>MA(1)</td>
+                        <td>Coupure après le décalage 1</td>
+                        <td>Décroissance exponentielle amortie</td>
+                    </tr>
+                    <tr>
+                        <td>ARMA(1,1)</td>
+                        <td>Décroissance exponentielle avec "saut" initial</td>
+                        <td>Décroissance exponentielle avec "saut" initial</td>
+                    </tr>
+                </table>
+
+                <div class="legend-panel">
+                    <h3>Applications typiques</h3>
+                    <p>Le processus ARMA(1,1) est particulièrement adapté pour modéliser :</p>
+                    <ul>
+                        <li>Des séries temporelles combinant dépendance à long terme et effets transitoires</li>
+                        <li>Des phénomènes présentant une autocorrélation qui ne correspond ni à un AR(1) pur ni à un MA(1) pur</li>
+                        <li>Des processus où la variance doit être finement contrôlée</li>
+                        <li>Des séries économiques ou financières avec persistance et chocs ponctuels</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2023 Analyse des Séries Temporelles</p>
+    </footer>
+
+    <script>
+        function switchTab(process) {
+            // Hide all sections
+            document.querySelectorAll('.main-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected section and activate corresponding tab
+            document.querySelector(`.section-${process}`).classList.add('active');
+            document.querySelector(`.nav-tab-${process}`).classList.add('active');
+        }
+    </script>
+
+</body>
+</html>
